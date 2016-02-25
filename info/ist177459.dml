@@ -1,0 +1,64 @@
+class User {
+	string username;
+	string password;
+	string name;
+	string mask;
+}
+
+class File {
+	integer id;
+	string name;
+	string lastChange;
+	string permission;
+}
+
+class PlainFile extends file {
+	string app;
+}
+
+class Dir extends file {
+	
+}
+
+class Link extends file {
+	string path;
+}
+
+class App extends file {
+	string ids;
+}
+
+relation userHasDir {
+	User playsRole user;
+	Dir playsRole dir {
+		multiplicity 1;
+	}
+}
+
+relation fileHasUser {
+	User playsRole user;
+	File playsRole file {
+		multiplicity *;
+	}
+}
+
+relation dirContainsFiles {
+	Dir playsRole dir;
+	File playsRole file {
+		multiplicity *;
+	}
+}
+
+relation dirContainsSelf {
+	Dir playsRole dir;
+	Dir playsRole self {
+		multiplicity 1;
+	}
+}
+
+relation dirContainsPartent {
+	Dir playsRole dir;
+	Dir playsRole partent {
+		multiplicity 1;
+	}
+}
