@@ -1,0 +1,64 @@
+class MYDRIVE;
+
+class User {
+	string username;
+	string password;
+	string name;
+	string mask;
+}
+
+class root extends User {}
+
+class file {
+	string name;
+	int id;
+	user creator;
+	string permission;
+}
+
+class plain file extends File {
+	string text;
+}
+
+class Dir extends File {}
+
+class Link extends File {}
+
+class App extends Plain File {}
+
+relation DomainRootHasMYDRIVEApplication {
+  .pt.ist.fenixframework.DomainRoot playsRole root {
+    multiplicity 0..1;
+  }
+  MYDRIVE playsRole mydrive {
+    multiplicity 0..1;
+  }
+}
+
+relation FileContainsUser {
+  File playsRole file;
+  User playsRole user {
+    multiplicity 0..1;
+  }
+}
+
+relation FileContainsDir {
+  File playsRole file;
+  Dir playsRole dir {
+    multiplicity 0..1;
+  }
+}
+
+relation DirContainsFile {
+  Dir playsRole dir;
+  File playsRole file {
+    multiplicity *;
+  }
+}
+
+relation UserContainsDir { 
+  User playsRole user;
+  Dir playsRole Dir {
+    multiplicity 0..1;
+  }
+}
