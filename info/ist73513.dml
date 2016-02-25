@@ -1,0 +1,82 @@
+class User{
+	String username;
+	String password;
+	String name;
+	String umask;	
+}
+
+
+class Dir{
+	String itself;
+	String father_dir;
+}
+
+relation rootHasDir{
+	root playsRole root {
+		multiplicity 0..1;
+	}
+
+	/home/root playsRole home{
+		multiplicity 0..1;	
+	}
+}
+
+relation UserContainsDir{
+	User playsRole user;
+	Dir playsRole dir;
+	
+}
+
+
+class File{	
+	String name;
+	Integer ID;
+	String owner;
+	String date;
+}
+
+
+
+relation UserAssociateFile{
+	User playsRole user;
+	File playsRole file{
+		multiplicity *;	
+	}
+}
+
+relation DirContainsFile{
+	Dir playsRole dir;
+	File playsRole file{
+		multiplicity *;
+	}
+}
+
+relation DirIsAFile{
+	Dir playsRole file;
+}
+
+
+class Plain_file{
+	String text;
+}
+
+relation PlainFileIsAFile{
+	Plain_file playsRole file;
+}
+
+
+class Link{
+}
+
+relation LinkIsAPlainFile{
+	Link playsRole plain_file;
+}
+
+class App{
+	String name;
+	
+}
+
+relation AppIsAPlainFile{
+	App playsRole file;
+}
