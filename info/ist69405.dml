@@ -1,0 +1,50 @@
+class MyDrive;
+
+class User {
+	String	username;
+	String	password;
+	String	name;
+	String	mask;
+	Dir	userHome;
+}
+
+class File {
+	Integer id;
+	String	name;
+	String	lastChange;
+	String	permission;
+}
+
+class PlainFile	extends File {
+	String	text;
+}
+
+class Link extends PlainFile {
+					//text = path
+}					
+
+class App extends PlainFile {
+					//text = javaMethod
+}
+
+class Dir extends File {
+	String	ownPath
+	String	fathersPath
+}
+
+relation userHasDirs {
+	User	playsRole owner;
+	Dir	playsRole dir{multiplicity 1..*;}
+}
+
+relation userHasFiles {
+	User	playsRole owner;
+	File	playsRole file{multiplicity *;}
+}
+
+relation dirHasFiles {
+	Dir	playsRole dir;
+	File	playsRole file{multuplicity *;}
+}
+
+
