@@ -1,0 +1,60 @@
+class User{
+	string name;
+	string username;
+	string name;
+	string password;
+	string mask;
+	string homedir;
+}
+
+abstract class File{
+	int identifier;
+	string name;
+	int last_changed;
+	string acess;
+}
+
+class PlainFile extends File{
+	string data;
+}
+
+class Dir extends File{}
+
+class Link extends File{
+	string path;
+}
+
+class App extends File{
+	string content;
+}
+
+relation FileContainsOwner {
+  File playsRole file;
+  User playsRole owner {
+    multiplicity 1;
+  }
+}
+
+relation FileContainsSelf {
+  File playsRole file{
+    multiplicity 1;
+  }
+  File playsRole Self{
+    multiplicity 1;
+  }
+}
+
+relation FileContainsParent {
+  File playsRole file
+  File playsRole Parent{
+    multiplicity 1;
+  }
+}
+
+relation FileContainsFiles {
+  File playsRole file;
+  File playsRole content{
+    multiplicity *;
+  }
+}
+
