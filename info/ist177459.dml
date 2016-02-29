@@ -12,20 +12,20 @@ class File {
 	string permission;
 }
 
-class PlainFile extends file {
+class PlainFile extends File {
 	string app;
 }
 
-class Dir extends file {
+class Dir extends File {
 	
 }
 
-class Link extends file {
-	string path;
+class Link extends PlainFile {
+	
 }
 
-class App extends file {
-	string ids;
+class App extends PlainFile {
+	
 }
 
 relation userHasDir {
