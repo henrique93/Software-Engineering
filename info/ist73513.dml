@@ -9,10 +9,16 @@ class User{
 class Dir extends File{
 }
 
-relation rootHasDir{
-	root playsRole root;
+class Root extends User{
+}
 
-	/home/root playsRole home{
+class RootDir extends Dir{
+}
+
+relation rootHasDir{
+	Root playsRole root;
+
+	RootDir playsRole home{
 		multiplicity 1;	
 	}
 }

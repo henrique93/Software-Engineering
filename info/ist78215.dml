@@ -45,7 +45,7 @@ relation FileContainsSelf {
 }
 
 relation FileContainsParent {
-  File playsRole file
+  File playsRole file;
   File playsRole Parent{
     multiplicity 1;
   }
