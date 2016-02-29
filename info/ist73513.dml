@@ -6,9 +6,7 @@ class User{
 }
 
 
-class Dir{
-	String itself;
-	String father_dir;
+class Dir extends File{
 }
 
 relation rootHasDir{
@@ -51,6 +49,13 @@ relation DirContainsFile{
 	}
 }
 
+relation DirContainsFather{
+	Dir playsRole dir;
+	Dir playsRole father{
+		multiplicity *;
+	}
+}
+
 relation DirContainsItself{
 	Dir playsRole dir;
 	Dir playsRole file{
@@ -58,32 +63,16 @@ relation DirContainsItself{
 	}
 }
 
-relation DirIsAFile{
-	Dir playsRole file;
-}
 
 
-class Plain_file{
+class Plain_file extends File{
 	String text;
 }
 
-relation PlainFileIsAFile{
-	Plain_file playsRole file;
+
+class Link extends File{
 }
 
-
-class Link{
-}
-
-relation LinkIsAPlainFile{
-	Link playsRole plain_file;
-}
-
-class App{
+class App extends File{
 	String name;
-	
-}
-
-relation AppIsAPlainFile{
-	App playsRole file;
 }
