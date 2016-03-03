@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>pt.tecnico.example</groupId>
-  <artifactId>example</artifactId>
+  <groupId>pt.tecnico.leic.es16al_28</groupId>
+  <artifactId>info</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>example</name>
-  <url>https://github.com/tecnico-softeng/es16al_28-project</url>
+  <name>ist177459</name>
+  <url>https://github.com/tecnico-softeng/es16al_28-project.git</url>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <build>
@@ -17,9 +17,11 @@
 	<groupId>pt.tecnico.plugin</groupId>
 	<artifactId>dml2yuml-maven-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<configuration>
-	  <role>false</role>
-	</configuration>
+    <configuration>
+        <names>false</names>
+        <outputDirectory>info</outputDirectory>
+        <url>http://yuml.me/diagram/scruffy;dir:lr/class/</url>
+    </configuration>
 	<executions>
 	  <execution>
 	    <phase>compile</phase>
