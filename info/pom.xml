@@ -17,6 +17,105 @@
 	<groupId>pt.tecnico.plugin</groupId>
 	<artifactId>dml2yuml-maven-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
+    
+    <developers>
+        <developer> <!-- Pedro Portugal -->
+        <id>ist169405</id>
+        <name>minhoka</name>
+        <email>ist169405@tecnico.ulisboa.pt</email>
+        <organization>es16 g28al</organization>
+        <roles>
+            <role>Developer</role>
+            <role>Architect</role>
+            <role>Tester</role>
+            <role>Integrator</role>
+        </roles>
+        <properties>
+            <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist169405</picUrl>
+        </properties>
+        </developer>
+        
+        <developer> <!-- Filipe Silva -->
+            <id>ist73513</id>
+            <name>Nhawl</name>
+            <email>ist173513@tecnico.ulisboa.pt</email>
+            <organization>es16 g28al</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+                <role>Tester</role>
+                <role>Integrator</role>
+            </roles>
+            <properties>
+                <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist173513</picUrl>
+            </properties>
+        </developer>
+        
+        <developer> <!-- Gustavo Gomes -->
+        <id>ist75948</id>
+        <name>gus-gomes</name>
+        <email>ist175948@tecnico.ulisboa.pt</email>
+        <organization>es16 g28al</organization>
+        <roles>
+            <role>Developer</role>
+            <role>Architect</role>
+            <role>Tester</role>
+            <role>Integrator</role>
+        </roles>
+        <properties>
+            <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist175948</picUrl>
+        </properties>
+        </developer>
+        
+        <developer>  <!-- Henrique Lourenco -->
+            <id>ist77459</id>
+            <name>henrique93</name>
+            <email>ist77459@tecnico.ulisboa.pt</email>
+            <organization>es16 g16al</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+                <role>Tester</role>
+                <role>Integrator</role>
+            </roles>
+            <properties>
+                <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist177459</picUrl>
+            </properties>
+        </developer>
+        
+        <developer> <!-- Jose Touret -->
+        <id>ist78215</id>
+        <name>migueltouret</name>
+        <email>ist178215@tecnico.ulisboa.pt</email>
+        <organization>es16 g28al</organization>
+        <roles>
+            <role>Developer</role>
+            <role>Architect</role>
+            <role>Tester</role>
+            <role>Integrator</role>
+        </roles>
+        <properties>
+            <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist178215</picUrl>
+        </properties>
+        </developer>
+        
+        <developer>  <!-- Pedro Cruz -->
+            <id>ist78579</id>
+            <name>pedrocruz27</name>
+            <email>ist178579@tecnico.ulisboa.pt</email>
+            <organization>es16 g28al</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+                <role>Tester</role>
+                <role>Integrator</role>
+            </roles>
+            <properties>
+                <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist178579</picUrl>
+            </properties>
+        </developer>
+    </developers>
+    
     <configuration>
         <names>false</names>
         <outputDirectory>info</outputDirectory>
