@@ -1,26 +1,23 @@
-package pt.ulisboa.tecnico.es16al_28;
+package pt.ulisboa.tecnico.es16al_28.domain;
 
-relation DomainApplication {
-  .pt.ist.fenixframework.DomainRoot playsRole root { multiplicity 1..1; }
-  User playsRole user { multiplicity 0..1; }
-}
+class MyDrive;
 
 class User {
-	string username;
-	string password;
-	string name;
-	string umask;
+	String username;
+	String password;
+	String name;
+	String umask;
 }
 
 class File {
-	integer id;
-	string name;
-	string lastChange;
-	string permission;
+	Integer id;
+	String name;
+	String lastChange;
+	String permission;
 }
 
 class PlainFile extends File {
-	string app;
+	String app;
 }
 
 class Dir extends File {
@@ -35,37 +32,51 @@ class App extends PlainFile {
 	
 }
 
-relation userHasDir {
+relation DomainApplicationHasMyDriveApplication {
+  .pt.ist.fenixframework.DomainRoot playsRole root { multiplicity 1..1; }
+  MyDrive playsRole mydrive { multiplicity 0..1; }
+}
+
+
+relation UserHasDir {
 	User playsRole user;
 	Dir playsRole dir {
 		multiplicity 1;
 	}
 }
 
-relation fileHasUser {
-	User playsRole user;
+relation FileHasUser {
+	User playsRole owner;
 	File playsRole file {
 		multiplicity *;
 	}
 }
 
-relation dirContainsFiles {
+relation DirContainsFiles {
 	Dir playsRole dir;
 	File playsRole file {
 		multiplicity *;
 	}
 }
 
-relation dirContainsSelf {
-	Dir playsRole dir;
+relation DirContainsPartent {
+	Dir playsRole child;
+	Dir playsRole parent {
+		multiplicity 1;
+	}
+}
+
+relation DirContainsSelf {
+	Dir playsRole dirSelf;
 	Dir playsRole self {
 		multiplicity 1;
 	}
 }
 
-relation dirContainsPartent {
-	Dir playsRole dir;
-	Dir playsRole partent {
-		multiplicity 1;
+
+relation MyDriveContainsUser{
+	MyDrive playsRole mydrive;
+	User playsRole user{
+		multiplicity *;
 	}
 }
