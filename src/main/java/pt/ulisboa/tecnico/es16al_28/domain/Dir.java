@@ -1,9 +1,14 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
+import org.jdom2.Element;
+
 import java.util.Set;
 import java.util.Iterator;
 
 /* Import exceptions */
+import java.io.UnsupportedEncodingException;
+import org.jdom2.DataConversionException;
+import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 import pt.ulisboa.tecnico.es16al_28.exception.FileNotFoundException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotEmptyException;
 
@@ -14,6 +19,11 @@ public class Dir extends Dir_Base {
         init(id, name, lastChange, permission, owner, dir);
     }
    
+    public Dir(User owner, Dir dir, Element xml) throws ImportDocumentException {
+        setOwner(owner);
+        setDir(dir);
+        xmlImport(xml);
+    }
    
    /**
      *  Remove a file or an empty directory from the current directory
@@ -60,6 +70,18 @@ public class Dir extends Dir_Base {
             ls += file.toString() + "\n";
         }
         return ls;
+    }
+
+    public void xmlImport(Element pfileElement) throws ImportDocumentException {
+        try {
+            setId(pfileElement.getAttribute("id").getIntValue());
+            setName(new String(pfileElement.getAttribute("name").getValue().getBytes("UTF-8")));
+            setLastChange(new String(pfileElement.getAttribute("lastChange").getValue().getBytes("UTF-8")));
+            setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
+
+        } catch (UnsupportedEncodingException | DataConversionException e) {
+            throw new ImportDocumentException();
+        }
     }
 
  
