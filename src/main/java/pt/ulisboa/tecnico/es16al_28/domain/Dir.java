@@ -14,6 +14,13 @@ public class Dir extends Dir_Base {
         init(id, name, lastChange, permission, owner, dir);
     }
    
+   
+   /**
+     *  Remove a file or an empty directory from the current directory
+     *  @param file     file or directory to be removed
+     */
+   
+   
     public void rm(File file) throws FileNotFoundException, NotEmptyException {
         Set entries = getFileSet();
         if (entries.contains(file)) {
@@ -30,6 +37,11 @@ public class Dir extends Dir_Base {
         }
     }
     
+    /**
+     *  Auxiliar function to rm
+     *  @param dir      directory to be removed
+     */
+     
     public void removeDir(Dir dir) throws NotEmptyException {
         if (dir.getFileCount() > 0) {    /* >0 ou >2 ??? */
             throw new NotEmptyException();  /* Exception manda o conteudo??? */
