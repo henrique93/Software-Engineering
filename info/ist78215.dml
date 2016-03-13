@@ -1,13 +1,12 @@
 class User{
 	string name;
 	string username;
-	string name;
 	string password;
 	string mask;
 	string homedir;
 }
 
-abstract class File{
+class File{
 	int identifier;
 	string name;
 	int last_changed;
@@ -18,13 +17,13 @@ class PlainFile extends File{
 	string data;
 }
 
-class Dir extends File{}
+class Dir extends File {}
 
-class Link extends File{
-	string path;
+class Link extends File {
+	string _path;
 }
 
-class App extends File{
+class App extends File {
 	string content;
 }
 
@@ -34,7 +33,6 @@ relation FileContainsOwner {
     multiplicity 1;
   }
 }
-
 relation FileContainsSelf {
   File playsRole file{
     multiplicity 1;

@@ -1,0 +1,135 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>pt.tecnico.leic.es16al_28</groupId>
+  <artifactId>info</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>ist177459</name>
+  <url>https://github.com/tecnico-softeng/es16al_28-project.git</url>
+  <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <developers>
+        <developer> <!-- Pedro Portugal -->
+        <id>ist169405</id>
+        <name>minhoka</name>
+        <email>ist169405@tecnico.ulisboa.pt</email>
+        <organization>es16 g28al</organization>
+        <roles>
+            <role>Developer</role>
+            <role>Architect</role>
+            <role>Tester</role>
+            <role>Integrator</role>
+        </roles>
+        <properties>
+            <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist169405</picUrl>
+        </properties>
+        </developer>
+        
+        <developer> <!-- Filipe Silva -->
+            <id>ist73513</id>
+            <name>Nhawl</name>
+            <email>ist173513@tecnico.ulisboa.pt</email>
+            <organization>es16 g28al</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+                <role>Tester</role>
+                <role>Integrator</role>
+            </roles>
+            <properties>
+                <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist173513</picUrl>
+            </properties>
+        </developer>
+        
+        <developer> <!-- Gustavo Gomes -->
+        <id>ist75948</id>
+        <name>gus-gomes</name>
+        <email>ist175948@tecnico.ulisboa.pt</email>
+        <organization>es16 g28al</organization>
+        <roles>
+            <role>Developer</role>
+            <role>Architect</role>
+            <role>Tester</role>
+            <role>Integrator</role>
+        </roles>
+        <properties>
+            <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist175948</picUrl>
+        </properties>
+        </developer>
+        
+        <developer>  <!-- Henrique Lourenco -->
+            <id>ist77459</id>
+            <name>henrique93</name>
+            <email>ist77459@tecnico.ulisboa.pt</email>
+            <organization>es16 g16al</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+                <role>Tester</role>
+                <role>Integrator</role>
+            </roles>
+            <properties>
+                <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist177459</picUrl>
+            </properties>
+        </developer>
+        
+        <developer> <!-- Jose Touret -->
+        <id>ist78215</id>
+        <name>migueltouret</name>
+        <email>ist178215@tecnico.ulisboa.pt</email>
+        <organization>es16 g28al</organization>
+        <roles>
+            <role>Developer</role>
+            <role>Architect</role>
+            <role>Tester</role>
+            <role>Integrator</role>
+        </roles>
+        <properties>
+            <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist178215</picUrl>
+        </properties>
+        </developer>
+        
+        <developer>  <!-- Pedro Cruz -->
+            <id>ist78579</id>
+            <name>pedrocruz27</name>
+            <email>ist178579@tecnico.ulisboa.pt</email>
+            <organization>es16 g28al</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+                <role>Tester</role>
+                <role>Integrator</role>
+            </roles>
+            <properties>
+                <picUrl>https://fenix.tecnico.ulisboa.pt/user/photo/ist178579</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+  <build>
+    <plugins>
+      <plugin>
+	<groupId>pt.tecnico.plugin</groupId>
+	<artifactId>dml2yuml-maven-plugin</artifactId>
+	<version>1.0-SNAPSHOT</version>
+  
+    <configuration>
+        <names>false</names>
+        <outputDirectory>info</outputDirectory>
+        <url>http://yuml.me/diagram/scruffy;dir:lr/class/</url>
+    </configuration>
+	<executions>
+	  <execution>
+	    <phase>compile</phase>
+	    <goals>
+	      <goal>dml2yuml</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
