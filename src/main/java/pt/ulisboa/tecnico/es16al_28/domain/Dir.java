@@ -38,6 +38,17 @@ public class Dir extends Dir_Base {
             removeFile(dir);
         }
     }
+    
+    /**
+     *  Directory's simple listing
+     */
+    public String listDir() {
+        String ls = ".\n..\n"; /* . e .. ou nomes??? */
+        for (File file: getFileSet()) {
+            ls += file.toString() + "\n";
+        }
+        return ls;
+    }
 
  
 }
