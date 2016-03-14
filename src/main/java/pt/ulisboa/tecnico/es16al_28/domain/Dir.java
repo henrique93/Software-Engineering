@@ -2,6 +2,16 @@ package pt.ulisboa.tecnico.es16al_28.domain;
 
 import org.jdom2.Element;
 
+import java.util.Set;
+import java.util.Iterator;
+
+/* Import exceptions */
+import java.io.UnsupportedEncodingException;
+import org.jdom2.DataConversionException;
+import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
+import pt.ulisboa.tecnico.es16al_28.exception.FileNotFoundException;
+import pt.ulisboa.tecnico.es16al_28.exception.NotEmptyException;
+
 public class Dir extends Dir_Base {
     
     public Dir() {
