@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.es16al_28.domain;
 import org.jdom2.Element;
 
 /* Import exceptions */
-import java.io.UnsupportedEncodingException;
 import org.jdom2.DataConversionException;
 import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 
@@ -43,7 +42,7 @@ public class PlainFile extends PlainFile_Base {
             setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
             setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
 
-    } catch (UnsupportedEncodingException | DataConversionException e) {
+    } catch (DataConversionException e) {
             throw new ImportDocumentException();
         }
     }
