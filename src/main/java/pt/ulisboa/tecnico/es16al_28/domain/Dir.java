@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
+import org.jdom2.Element;
+
 public class Dir extends Dir_Base {
     
     public Dir() {
@@ -22,6 +24,11 @@ public class Dir extends Dir_Base {
         setParent(dir);
         init(id, name, permission, owner, dir);
     }
+
+    public Dir(Dir dir, Element xml) throws ImportDocumentException {
+        setDir(dir);
+        xmlImport(xml);
+    }
     
     
     public String listDir() {
@@ -30,6 +37,19 @@ public class Dir extends Dir_Base {
             ls += file.toString() + "\n";
         }
         return ls;
+    }
+
+    public void xmlImport(Element pfileElement) throws ImportDocumentException {
+        try {
+            setId(pfileElement.getAttribute("id").getIntValue());
+            setName(new String(pfileElement.getAttribute("name").getValue().getBytes("UTF-8")));
+            setLastChange(new String(pfileElement.getAttribute("lastChange").getValue().getBytes("UTF-8")));
+            setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
+            setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
+
+        } catch (UnsupportedEncodingException | DataConversionException e) {
+            throw new ImportDocumentException();
+        }
     }
     
 

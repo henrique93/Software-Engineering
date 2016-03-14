@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
+import org.jdom2.Element;
+
 import pt.ulisboa.tecnico.es16al_28.exception.UserAlreadyExistsException;
 
 public class User extends User_Base {
@@ -19,6 +21,12 @@ public class User extends User_Base {
 	
     }
 
+    public User(Dir home, MyDrive mydrive, Element xml) throws ImportDocumentException, NotFileException {
+        setDir(home);
+        setMydrive(mydrive);
+        xmlImport(xml);
+    }
+
     /**
      *  Super User special constructor
      */
@@ -33,6 +41,8 @@ public class User extends User_Base {
         setDir(dirRoot);
 	
     }
+
+
     
     @Override
     public String toString() {
@@ -48,4 +58,16 @@ public class User extends User_Base {
         setMydrive(null);
         deleteDomainObject();
     }
+
+     public void xmlImport(Element userElement) throws ImportDocumentException, NotFileException {
+
+        try {
+            setUsername(new String(userElement.getAttribute("username").getValue().getBytes("UTF-8")));
+            setPassword(new String(userElement.getAttribute("password").getValue().getBytes("UTF-8")));
+            setName(new String(userElement.getAttribute("name").getValue().getBytes("UTF-8")));
+            setUmask(new String(userElement.getAttribute("umask").getValue().getBytes("UTF-8")));
+            
+        } catch (UnsupportedEncodingException e) {
+            throw new ImportDocumentException();
+        }
 }
