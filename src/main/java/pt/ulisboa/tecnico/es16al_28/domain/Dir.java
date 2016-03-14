@@ -39,6 +39,31 @@ public class Dir extends Dir_Base {
         return ls;
     }
 
+    public void rm(File file) throws FileNotFoundException, NotEmptyException {
+        Set entries = getFileSet();
+        if (entries.contains(file)) {
+            if (file instanceof Dir) {
+                Dir dir = (Dir) file;
+                removeDir(dir);
+            }
+            else {
+                removeFile(file);
+            }
+        }
+        else {
+            throw new FileNotFoundException(file.getName());
+        }
+    }
+    
+    public void removeDir(Dir dir) throws NotEmptyException {
+        if (dir.getFileCount() > 0) {    
+            throw new NotEmptyException(dir.getName());
+        }
+        else {
+            removeFile(dir);
+        }
+    }
+
     public void xmlImport(Element pfileElement) throws ImportDocumentException {
         try {
             setId(pfileElement.getAttribute("id").getIntValue());
