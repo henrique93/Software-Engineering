@@ -85,14 +85,7 @@ public class User extends User_Base {
         element.setAttribute("password", getPassword());
         element.setAttribute("name", getName());
         element.setAttribute("umask", getUmask());
-
-        /*
-        Element filesElement = new Element("files");
-        element.addContent(filesElement);
         
-        for (File f: getFileSet())
-            filesElement.addContent(f.xmlExport());
-        */
         return element; 
     }
 }
