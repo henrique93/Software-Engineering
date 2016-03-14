@@ -23,5 +23,14 @@ public class Dir extends Dir_Base {
         init(id, name, permission, owner, dir);
     }
     
+    
+    public String listDir() {
+        String ls = ".\n..\n"; 
+        for (File file: getFileSet()) {
+            ls += file.toString() + "\n";
+        }
+        return ls;
+    }
+    
 
 }
