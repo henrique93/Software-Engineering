@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
+import org.jdom2.Element;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
