@@ -34,21 +34,28 @@ public class Dir extends Dir_Base {
         setParent(dir);
         init(id, name, permission, owner, dir);
     }
-
+    
     public Dir(Dir dir, Element xml) throws ImportDocumentException {
         setDir(dir);
         xmlImport(xml);
     }
     
-    
+    /**
+     *  Directory's simple listing
+     */
     public String listDir() {
-        String ls = ".\n..\n"; 
+        String ls = ".\n..\n"; /* . e .. ou nomes??? */
         for (File file: getFileSet()) {
             ls += file.toString() + "\n";
         }
         return ls;
     }
-
+    
+    /**
+     *  Remove a file or an empty directory from the current directory
+     *  @param file     file or directory to be removed
+     */
+     
     public void rm(File file) throws FileNotFoundException, NotEmptyException {
         Set entries = getFileSet();
         if (entries.contains(file)) {
@@ -65,15 +72,23 @@ public class Dir extends Dir_Base {
         }
     }
     
+    /**
+     *  Auxiliar function to rm
+     *  @param dir      directory to be removed
+     */
     public void removeDir(Dir dir) throws NotEmptyException {
-        if (dir.getFileCount() > 0) {    
-            throw new NotEmptyException(dir.getName());
+        if (dir.getFileCount() > 0) {    /* >0 ou >2 ??? */
+            throw new NotEmptyException(dir.getName());  /* Exception manda o conteudo??? */
         }
         else {
             removeFile(dir);
         }
     }
-
+    
+    /**
+     *  xmlImport function
+     *  @param pfileElement     list of files to import for this user
+     */
     public void xmlImport(Element pfileElement) throws ImportDocumentException {
         try {
             setId(pfileElement.getAttribute("id").getIntValue());
@@ -82,7 +97,7 @@ public class Dir extends Dir_Base {
             setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
             setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
 
-        } catch (DataConversionException e) {
+        } catch (UnsupportedEncodingException | DataConversionException e) {
             throw new ImportDocumentException();
         }
     }
@@ -97,6 +112,6 @@ public class Dir extends Dir_Base {
         
         return element; 
     }
-    
 
+    
 }
