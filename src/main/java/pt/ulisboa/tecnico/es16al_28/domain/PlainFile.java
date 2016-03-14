@@ -7,23 +7,13 @@ import java.io.UnsupportedEncodingException;
 import org.jdom2.DataConversionException;
 import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 
+
 public class PlainFile extends PlainFile_Base {
     
     public PlainFile () {
         super();
     }
     
-    public PlainFile(int id, String name, String permission, String owner, Dir dir) {
-        super();
-        init(id, name, permission, owner, dir);
-    }
-
-     public PlainFile(Dir dir, Element xml) throws ImportDocumentException {
-        setDir(dir);
-        xmlImport(xml);
-    }
-    
-
     /**
      *  Reads the content from a file
      *  @param file     file to read the content from
@@ -32,7 +22,19 @@ public class PlainFile extends PlainFile_Base {
     public String readFile() {
         return this.getApp();
     }
+    
+    
+    public PlainFile(int id, String name, String permission, String owner, Dir dir) {
+        super();
+        init(id, name, permission, owner, dir);
+    }
 
+    public PlainFile(Dir dir, Element xml) throws ImportDocumentException {
+        setDir(dir);
+        xmlImport(xml);
+    }
+    
+    
     public void xmlImport(Element pfileElement) throws ImportDocumentException {
     try {
             setId(pfileElement.getAttribute("id").getIntValue());
@@ -41,11 +43,11 @@ public class PlainFile extends PlainFile_Base {
             setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
             setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
 
-    } catch (DataConversionException e) {
+    } catch (UnsupportedEncodingException | DataConversionException e) {
             throw new ImportDocumentException();
         }
     }
-
+    
      public Element xmlExport() {
         Element element = new Element("plainFile");
         element.setAttribute("id", Integer.toString(getId()));
