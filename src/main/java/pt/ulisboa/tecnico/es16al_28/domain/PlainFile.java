@@ -2,6 +2,11 @@ package pt.ulisboa.tecnico.es16al_28.domain;
 
 import org.jdom2.Element;
 
+/* Import exceptions */
+import java.io.UnsupportedEncodingException;
+import org.jdom2.DataConversionException;
+import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
+
 public class PlainFile extends PlainFile_Base {
     
     public PlainFile () {
