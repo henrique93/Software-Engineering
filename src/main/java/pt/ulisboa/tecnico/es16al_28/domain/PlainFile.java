@@ -11,4 +11,13 @@ public class PlainFile extends PlainFile_Base {
         init(id, name, permission, owner, dir);
     }
 
+    /**
+     *  Reads the content from a file
+     *  @param file     file to read the content from
+     *  @return string  file's content
+     */
+    public String readFile() {
+        return this.getApp();
+    }
+
 }
