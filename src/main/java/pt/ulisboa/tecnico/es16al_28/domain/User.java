@@ -2,6 +2,13 @@ package pt.ulisboa.tecnico.es16al_28.domain;
 
 import org.jdom2.Element;
 
+/* Import exceptions */
+import java.io.UnsupportedEncodingException;
+import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
+import pt.ulisboa.tecnico.es16al_28.exception.ImportUserException;
+import pt.ulisboa.tecnico.es16al_28.exception.NotFileException;
+import pt.ulisboa.tecnico.es16al_28.exception.UserAlreadyExistsException;
+
 import pt.ulisboa.tecnico.es16al_28.exception.UserAlreadyExistsException;
 
 public class User extends User_Base {
