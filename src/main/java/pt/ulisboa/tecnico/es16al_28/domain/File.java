@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
-import org.jdom2.Element;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,7 +12,7 @@ public abstract class File extends File_Base {
     /**
      *  file initializer
      */
-    public void init(int id, String name, String lastChange, String permission, User owner, Dir dir) {
+    public void init(int id, String name, String permission, String owner, Dir dir) {
         setId(id);
         setName(name);
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
@@ -23,10 +21,16 @@ public abstract class File extends File_Base {
         setOwner(owner);
         setDir(dir);
     }
+
+	public void remove() {
+       	setDir(null);
+        deleteDomainObject();
+    }
+
     
     
     @Override
     public String toString() {
-        return "File ID: " + getId() + "Name: " + getName() + "Owner: " + getOwner().toString() + "Permisisons: " + getPermission() + "Modified last at: " + getLastChange();
+        return "File ID: " + getId() + "\tName: " + getName() + "\tOwner: " + getOwner() + "\tPermisisons: " + getPermission() + "\tModified last at: " + getLastChange();
     }
 }
