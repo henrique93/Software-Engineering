@@ -70,6 +70,7 @@ public class User extends User_Base {
         } catch (UnsupportedEncodingException e) {
             throw new ImportDocumentException();
         }
+     }
 
     public Element xmlExport() {
         Element element = new Element("user");
