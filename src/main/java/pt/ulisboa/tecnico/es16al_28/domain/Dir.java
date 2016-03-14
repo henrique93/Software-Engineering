@@ -82,7 +82,7 @@ public class Dir extends Dir_Base {
             setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
             setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
 
-        } catch (UnsupportedEncodingException | DataConversionException e) {
+        } catch (DataConversionException e) {
             throw new ImportDocumentException();
         }
     }
