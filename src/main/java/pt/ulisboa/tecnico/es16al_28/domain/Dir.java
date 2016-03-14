@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.Iterator;
 
 /* Import exceptions */
-import java.io.UnsupportedEncodingException;
 import org.jdom2.DataConversionException;
 import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 import pt.ulisboa.tecnico.es16al_28.exception.FileNotFoundException;
@@ -97,7 +96,7 @@ public class Dir extends Dir_Base {
             setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
             setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
 
-        } catch (UnsupportedEncodingException | DataConversionException e) {
+        } catch (DataConversionException e) {
             throw new ImportDocumentException();
         }
     }
