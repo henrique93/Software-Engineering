@@ -41,4 +41,14 @@ public class PlainFile extends PlainFile_Base {
         }
     }
 
+     public Element xmlExport() {
+        Element element = new Element("plainFile");
+        element.setAttribute("id", Integer.toString(getId()));
+        element.setAttribute("name", getName());
+        element.setAttribute("lastChange",  getLastChange());
+        element.setAttribute("permission", getPermission());
+        element.setAttribute("owner", getOwner());
+
+        return element; 
+    }
 }

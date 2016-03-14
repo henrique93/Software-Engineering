@@ -70,4 +70,21 @@ public class User extends User_Base {
         } catch (UnsupportedEncodingException e) {
             throw new ImportDocumentException();
         }
+
+    public Element xmlExport() {
+        Element element = new Element("user");
+        element.setAttribute("username", getUsername());
+        element.setAttribute("password", getPassword());
+        element.setAttribute("name", getName());
+        element.setAttribute("umask", getUmask());
+
+        /*
+        Element filesElement = new Element("files");
+        element.addContent(filesElement);
+        
+        for (File f: getFileSet())
+            filesElement.addContent(f.xmlExport());
+        */
+        return element; 
+    }
 }

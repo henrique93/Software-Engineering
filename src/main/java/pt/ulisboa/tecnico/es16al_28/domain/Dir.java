@@ -51,6 +51,17 @@ public class Dir extends Dir_Base {
             throw new ImportDocumentException();
         }
     }
+
+    public Element xmlExport() {
+        Element element = new Element("dir");
+        element.setAttribute("id", Integer.toString(getId()));
+        element.setAttribute("name", getName());
+        element.setAttribute("lastChange",  getLastChange());
+        element.setAttribute("permission", getPermission());
+        element.setAttribute("owner", getOwner());
+        
+        return element; 
+    }
     
 
 }
