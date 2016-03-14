@@ -12,6 +12,7 @@ class User {
 class File {
 	Integer id;
 	String name;
+	String owner;
 	String lastChange;
 	String permission;
 }
@@ -42,13 +43,6 @@ relation UserHasDir {
 	User playsRole user;
 	Dir playsRole dir {
 		multiplicity 1;
-	}
-}
-
-relation FileHasUser {
-	User playsRole owner;
-	File playsRole file {
-		multiplicity *;
 	}
 }
 
