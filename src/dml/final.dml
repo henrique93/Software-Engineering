@@ -1,0 +1,98 @@
+package pt.ulisboa.tecnico.es16al_28.domain;
+
+class MyDrive {
+	Integer id;
+}
+
+class User {
+	String username;
+	String password;
+	String name;
+	String umask;
+}
+
+class File {
+	Integer id;
+	String name;
+	String lastChange;
+	String permission;
+}
+
+class PlainFile extends File {
+	String app;
+}
+
+class Dir extends File {
+	
+}
+
+class Link extends PlainFile {
+	
+}
+
+class App extends PlainFile {
+	
+}
+
+relation DomainApplicationHasMyDriveApplication {
+  .pt.ist.fenixframework.DomainRoot playsRole root { multiplicity 1..1; }
+  MyDrive playsRole mydrive { multiplicity 0..1; }
+}
+
+
+relation UserHasDir {
+	User playsRole user;
+	Dir playsRole dir {
+		multiplicity 1;
+	}
+}
+
+relation FileHasOwner {
+	File playsRole file{
+		multiplicity *;
+}
+	User playsRole owner {
+		multiplicity 1;
+	}
+}
+
+relation DirContainsFiles {
+	Dir playsRole dir;
+	File playsRole file {
+		multiplicity *;
+	}
+}
+
+relation DirHasPartent {
+	Dir playsRole child;
+	Dir playsRole parent {
+		multiplicity 1;
+	}
+}
+
+relation MyDriveContainsSuperUser {
+	MyDrive playsRole mydriveU {
+		multiplicity 1;
+	}
+	User playsRole superUser {
+		multiplicity 1;
+	}
+}
+
+relation MyDriveContainsRootDir {
+	MyDrive playsRole mydriveR {
+		multiplicity 1;
+	}
+	Dir playsRole rootDir {
+		multiplicity 1;
+	}
+}
+
+relation MyDriveContainsUser{
+	MyDrive playsRole mydrive {
+		multiplicity 1;
+	}
+	User playsRole user {
+		multiplicity *;
+	}
+}
