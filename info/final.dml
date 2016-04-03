@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
-class MyDrive;
+class MyDrive {
+	Integer id;
+}
 
 class User {
 	String username;
@@ -12,7 +14,6 @@ class User {
 class File {
 	Integer id;
 	String name;
-	String owner;
 	String lastChange;
 	String permission;
 }
@@ -46,6 +47,15 @@ relation UserHasDir {
 	}
 }
 
+relation FileHasOwner {
+	File playsRole file{
+		multiplicity *;
+}
+	User playsRole owner {
+		multiplicity 1;
+	}
+}
+
 relation DirContainsFiles {
 	Dir playsRole dir;
 	File playsRole file {
@@ -53,24 +63,36 @@ relation DirContainsFiles {
 	}
 }
 
-relation DirContainsPartent {
+relation DirHasPartent {
 	Dir playsRole child;
 	Dir playsRole parent {
 		multiplicity 1;
 	}
 }
 
-relation DirContainsSelf {
-	Dir playsRole dirSelf;
-	Dir playsRole self {
+relation MyDriveContainsSuperUser {
+	MyDrive playsRole mydriveU {
+		multiplicity 1;
+	}
+	User playsRole superUser {
 		multiplicity 1;
 	}
 }
 
+relation MyDriveContainsRootDir {
+	MyDrive playsRole mydriveR {
+		multiplicity 1;
+	}
+	Dir playsRole rootDir {
+		multiplicity 1;
+	}
+}
 
 relation MyDriveContainsUser{
-	MyDrive playsRole mydrive;
-	User playsRole user{
+	MyDrive playsRole mydrive {
+		multiplicity 1;
+	}
+	User playsRole user {
 		multiplicity *;
 	}
 }
