@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
 import org.jdom2.Element;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /* Import exceptions */
 import java.io.UnsupportedEncodingException;
@@ -8,15 +10,22 @@ import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 import pt.ulisboa.tecnico.es16al_28.exception.ImportUserException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotFileException;
 import pt.ulisboa.tecnico.es16al_28.exception.UserAlreadyExistsException;
+import pt.ulisboa.tecnico.es16al_28.exception.InvalidUsernameException;
 
 public class User extends User_Base {
     
-    public User(String username, String password, String name, String umask, Dir home, MyDrive mydrive) throws UserAlreadyExistsException {
+    public User(String username, String password, String name, String umask, MyDrive mydrive) throws UserAlreadyExistsException , InvalidUsernameException {
+        Pattern p = Pattern.compile("[^A-Za-z0-9]");
+        Matcher m = p.matcher(username);
+        if (m.find()) {
+            throw new InvalidUsernameException(username);
+        }
         for (User u: mydrive.getUserSet()) {
             if (u.getUsername() == username) {
-                throw new UserAlreadyExistsException();
+                throw new UserAlreadyExistsException(username);
             }
         }
+        Dir home = new Dir(mydrive, name, umask, this, mydrive.getRootDir());
         setUsername(username);
         setPassword(password);
         setName(name);
@@ -37,14 +46,14 @@ public class User extends User_Base {
     /**
      *  Super User special constructor
      */
-    public User(MyDrive mydrive, Dir parent, int dirID) {
+    public User(MyDrive mydrive, Dir parent) {
         Dir dirRoot;
         setUsername("root");
         setPassword("rootroot");
         setName("Super User");
         setUmask("rwxdr-x-");
         setMydrive(mydrive);
-        dirRoot = new Dir(dirID,"root","rwxdr-x-", parent);
+        dirRoot = new Dir(mydrive, "root", "rwxdr-x-", this, parent);
         setDir(dirRoot);
 	
     }
@@ -55,38 +64,15 @@ public class User extends User_Base {
     }
     
     public void xmlImport(Element userElement) throws ImportDocumentException, NotFileException {
-        
-        /*for (File f: getFileSet())
-            dir.rm(f);
-        */
         try {
             setUsername(new String(userElement.getAttribute("username").getValue().getBytes("UTF-8")));
             setPassword(new String(userElement.getAttribute("password").getValue().getBytes("UTF-8")));
             setName(new String(userElement.getAttribute("name").getValue().getBytes("UTF-8")));
             setUmask(new String(userElement.getAttribute("umask").getValue().getBytes("UTF-8")));
             
-        } catch (UnsupportedEncodingException e) {
-            throw new ImportDocumentException();
-        }
-        
-       /* Element files = userElement.getChild("files");
-        
-        for (Element fileElement: files.getChildren("file"))
-            if (fileElement instanceof Link) {
-                new Link(this, fileElement);
+        }   catch (UnsupportedEncodingException e) {
+                throw new ImportDocumentException();
             }
-            else if (fileElement instanceof App) {
-                new App(this, fileElement);
-            }
-            else if (fileElement instanceof PlainFile) {
-                new PlainFile(this, fileElement);
-            }
-            else if (fileElement instanceof Dir) {
-                new Dir(this, fileElement);
-            }
-            else {
-                throw new NotFileException();
-            }*/
         
     }
 
@@ -96,14 +82,7 @@ public class User extends User_Base {
         element.setAttribute("password", getPassword());
         element.setAttribute("name", getName());
         element.setAttribute("umask", getUmask());
-
-        /*
-        Element filesElement = new Element("files");
-        element.addContent(filesElement);
-        
-        for (File f: getFileSet())
-            filesElement.addContent(f.xmlExport());
-        */
+        element.addContent(getDir().xmlExport());
         return element; 
     }
 

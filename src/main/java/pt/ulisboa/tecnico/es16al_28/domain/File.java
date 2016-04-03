@@ -14,8 +14,8 @@ public abstract class File extends File_Base {
     /**
      *  file initializer
      */
-    public void init(int id, String name, String permission, String owner, Dir dir) {
-        setId(id);
+    public void init(MyDrive mydrive, String name, String permission, User owner, Dir dir) {
+        setId(mydrive.incID());
         setName(name);
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
         setLastChange(timeStamp);
@@ -24,15 +24,23 @@ public abstract class File extends File_Base {
         setDir(dir);
     }
 
-	public void remove() {
-       	setDir(null);
+     public void remove() {
+      	setDir(null);
         deleteDomainObject();
     }
 
-    
+     public Element xmlExport() {
+	Element element = new Element("File");
+    	element.setAttribute("id", Integer.toString(getId()));
+        element.setAttribute("name", getName());
+        element.setAttribute("lastChange",  getLastChange());
+        element.setAttribute("permission", getPermission());
+	return element;
+    }
+	
     
     @Override
     public String toString() {
-        return "File ID: " + getId() + "\tName: " + getName() + "\tOwner: " + getOwner() + "\tPermisisons: " + getPermission() + "\tModified last at: " + getLastChange();
+        return "File ID: " + getId() + "\tName: " + getName() + "\tOwner: " + getOwner().toString() + "\tPermisisons: " + getPermission() + "\tModified last at: " + getLastChange();
     }
 }

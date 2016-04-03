@@ -23,10 +23,11 @@ public class PlainFile extends PlainFile_Base {
         return this.getApp();
     }
     
-    
-    public PlainFile(int id, String name, String permission, String owner, Dir dir) {
+
+    public PlainFile(MyDrive mydrive, String name, String permission, User owner, Dir dir , String app) {
         super();
-        init(id, name, permission, owner, dir);
+	setApp(app);
+        init(mydrive, name, permission, owner, dir);
     }
 
     public PlainFile(Dir dir, Element xml) throws ImportDocumentException {
@@ -41,7 +42,7 @@ public class PlainFile extends PlainFile_Base {
             setName(new String(pfileElement.getAttribute("name").getValue().getBytes("UTF-8")));
             setLastChange(new String(pfileElement.getAttribute("lastChange").getValue().getBytes("UTF-8")));
             setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
-            setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));
+            /*setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));*/
 
     } catch (UnsupportedEncodingException | DataConversionException e) {
             throw new ImportDocumentException();
@@ -49,13 +50,9 @@ public class PlainFile extends PlainFile_Base {
     }
     
      public Element xmlExport() {
-        Element element = new Element("plainFile");
-        element.setAttribute("id", Integer.toString(getId()));
-        element.setAttribute("name", getName());
-        element.setAttribute("lastChange",  getLastChange());
-        element.setAttribute("permission", getPermission());
-        element.setAttribute("owner", getOwner());
-
+        Element element = super.xmlExport();
+        element.setAttribute("app", getApp());
+	element.setName("PlainFile");
         return element; 
     }
 }
