@@ -4,7 +4,7 @@ public class UserAlreadyExistsException extends MyDriveException {
     
     private static final long serialVersionUID = 1L;
     
-    public UserAlreadyExistsException() {
-        super("Username already in use");
+    public UserAlreadyExistsException(String username) {
+        super("Username '" + username + "' already in use");
     }
 }

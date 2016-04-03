@@ -17,6 +17,6 @@ public class NotEmptyException extends MyDriveException {
     
     @Override
     public String getMessage() {
-        return "This directory is not empty: " + _dirName;
+        return _dirName + ": Not an empty directory";
     }
 }
