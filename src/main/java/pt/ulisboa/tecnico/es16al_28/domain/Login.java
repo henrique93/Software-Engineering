@@ -21,8 +21,7 @@ public class Login extends Login_Base {
     }
 
     /**
-     *  User constructor
-     *  @param  mydrive     MyDrive application
+     *  Login constructor
      *  @param  username    User's username
      *  @param  password    User's password
      */
@@ -55,13 +54,6 @@ public class Login extends Login_Base {
         }
         setValidity(new DateTime());
         return true;
-    }
-
-    public void RefreshValidity(MyDrive mydrive) throws TokenExpiredException {
-        if(CheckValidity(getToken()) == true) {
-            setValidity(new DateTime());
-        }
-        throw new TokenExpiredException();
     }
 
     /**
