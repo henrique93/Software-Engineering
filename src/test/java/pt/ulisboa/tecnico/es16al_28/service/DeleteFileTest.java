@@ -64,6 +64,8 @@ public class DeleteFileTest extends AbstractServiceTest {
         logged.cd(mydrive, "DirTest");
         Link trash = new Link(logged, "LinkTest2", "DELETE.TEST");
         logged.cd(mydrive, "..");
+        DeleteFileService service = new DeleteFileService(file, _token);
+        service.execute();
 
         // Check if directory was removed
         assertFalse("File was not removed", logged.getCurrentDir().directoryHasFile(file));
