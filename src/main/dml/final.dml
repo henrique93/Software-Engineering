@@ -11,6 +11,11 @@ class User {
 	String umask;
 }
 
+class Login {
+	Long token;
+	DateTime validity;
+}
+
 class File {
 	Integer id;
 	String name;
@@ -39,10 +44,32 @@ relation DomainApplicationHasMyDriveApplication {
   MyDrive playsRole mydrive { multiplicity 0..1; }
 }
 
+relation MyDriveHasLogin {
+	MyDrive playsRole mydriveL {
+		multiplicity 1;
+	}
+	Login playsRole loged {
+		multiplicity *;
+	}
+}
 
 relation UserHasDir {
 	User playsRole user;
 	Dir playsRole dir {
+		multiplicity 1;
+	}
+}
+
+relation LoginHasUser {
+	Login playsRole log;
+	User playsRole user {
+		multiplicity 1;
+	}
+}
+
+relation LoginHasCwd {
+	Login playsRole login;
+	Dir playsRole currentDir {
 		multiplicity 1;
 	}
 }
@@ -57,16 +84,9 @@ relation FileHasOwner {
 }
 
 relation DirContainsFiles {
-	Dir playsRole dir;
+	Dir playsRole parent;
 	File playsRole file {
 		multiplicity *;
-	}
-}
-
-relation DirHasPartent {
-	Dir playsRole child;
-	Dir playsRole parent {
-		multiplicity 1;
 	}
 }
 
