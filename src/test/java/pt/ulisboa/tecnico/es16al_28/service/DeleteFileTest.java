@@ -24,6 +24,7 @@ public class DeleteFileTest extends AbstractServiceTest {
     private long _token;
 
     protected void populate() {
+        MyDrive mydrive = MyDrive.getInstance();
         Login logged = new Login("root", "rootroot");
         _token = logged.getToken();
         Link link = new Link(logged, "LinkTest", "DELETE.TEST");
@@ -53,6 +54,19 @@ public class DeleteFileTest extends AbstractServiceTest {
         assertFalse("File was not removed", currentDir.directoryHasFile(app));
         assertFalse("File was not removed", currentDir.directoryHasFile(plainfile));
         assertFalse("File was not removed", currentDir.directoryHasFile(dir));
+    }
+
+    @Test
+    public void successDeleteDirectoryNotEmpty() {
+        final String file = "DirTest";
+        MyDrive mydrive = MyDrive.getInstance();
+        Login logged = mydrive.getLoginByToken(_token);
+        logged.cd(mydrive, "DirTest");
+        Link trash = new Link(logged, "LinkTest2", "DELETE.TEST");
+        logged.cd(mydrive, "..");
+
+        // Check if directory was removed
+        assertFalse("File was not removed", logged.getCurrentDir().directoryHasFile(file));
     }
 
     @Test(expected = NoSuchFileOrDirectoryException.class)
