@@ -30,7 +30,6 @@ public class DeleteFileTest extends AbstractServiceTest {
         App app = new App(logged, "AppTest", "DELETE.TEST");
         PlainFile plainfile = new PlainFile(logged, "PlainFileTest", "DELETE.TEST");
         Dir dir = new Dir(logged, "DirTest");
-        /* Falta criar um file dentro deste dir */
     }
 
     @Test
@@ -47,7 +46,6 @@ public class DeleteFileTest extends AbstractServiceTest {
         plainFileService.execute();
         DeleteFileService dirService = new DeleteFileService(dir, _token);
         dirService.execute();
-        // Falta adicionar um file ao directorio criado
         Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check if files were removed
@@ -78,17 +76,4 @@ public class DeleteFileTest extends AbstractServiceTest {
         service.execute();
     }
 
-    /* Nao da para estar acima do / para o apagar, posso tentar apagar o . ou o ..?
-    @Test(expected = PermissionDeniedException.class)
-    public void DeleteSlashDirectory() {
-        final String slash = "/";
-        login logged = MyDriveService.getMyDrive().getLoginByToken(_token);
-        while (!logged.getCurrentDir().getParent().equals(logged.getCurrentDir())) {
-            logged.cd("..");
-        }
-        DeleteFileService service = new DeleteFileService(slash, _token);
-        service.execute();
-    } */
-
-    /* Posso apagar o . ou o ..? */
 }
