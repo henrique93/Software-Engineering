@@ -30,6 +30,9 @@ public class WriteFileTest extends AbstractServiceTest {
         _token = l.getToken();
     }
 
+// TESTS for PlainFiles, Apps and Links
+
+// testing: PlainFile content ( same for re-writing a file )
     @Test
     public void success() {
     	final String content = "agora é isto 2";
@@ -41,6 +44,8 @@ public class WriteFileTest extends AbstractServiceTest {
         assertEquals(content, f.readFile(l));
     }
 
+
+// testing: writing in a non existing file
     @Test(expected = NoSuchFileOrDirectoryException.class)
     public void writeNonExistingFile() {
     	 final String content = "vai dar erro";
@@ -48,7 +53,9 @@ public class WriteFileTest extends AbstractServiceTest {
         WriteFileService service = new WriteFileService(_token, file, content);
         service.execute();
     }
-   
+
+
+// testing: writing in a file without permission   
    @Test(expected = PermissionDeniedException.class)
    public void writeFileWithoutPermission() {
        final String file = "aaa";
