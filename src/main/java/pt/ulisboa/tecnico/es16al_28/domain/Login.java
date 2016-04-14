@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Random;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
 
@@ -21,7 +22,8 @@ public class Login extends Login_Base {
     }
 
     /**
-     *  Login constructor
+     *  User constructor
+     *  @param  mydrive     MyDrive application
      *  @param  username    User's username
      *  @param  password    User's password
      */
@@ -34,11 +36,33 @@ public class Login extends Login_Base {
         if (!user.getPassword().equals(password)) {
             throw new IncorrectPasswordException();
         }
-        setMydriveL(mydrive);
         setUser(user);
         setCurrentDir(user.getDir());
-        setToken(new BigInteger(64, new Random()).longValue());
+        long token = new BigInteger(64, new Random()).longValue();
+        while (mydrive.isLogged(token)) {
+            token = new BigInteger(64, new Random()).longValue();
+        }
+        setToken(token);
         setValidity(new DateTime());
+        for (Login login : mydrive.getLogedSet()) {
+            if(!login.CheckValidity(login.getToken())) {
+                login.removeLogin();
+            }
+        }
+        setMydriveL(mydrive);
+    }
+
+    /**
+     *  Login destroyer
+     *  Removes this login
+     */
+    public void removeLogin() {
+        setMydriveL(null);
+        setUser(null);
+        setCurrentDir(null);
+        setToken(null);
+        setValidity(null);
+        deleteDomainObject();
     }
 
     /**
@@ -49,10 +73,11 @@ public class Login extends Login_Base {
      */
     public boolean CheckValidity(Long token) throws TokenDoesNotExistException {
         DateTime now = new DateTime();
-        if ((getValidity().getMillis() - now.getMillis()) > 3600000) {
+        Interval interval = new Interval(getValidity(), now);
+        if (interval.toDurationMillis() > 3600000) {
             return false;
         }
-        setValidity(new DateTime());
+        setValidity(now);
         return true;
     }
 
