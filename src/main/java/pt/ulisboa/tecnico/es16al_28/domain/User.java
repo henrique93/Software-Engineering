@@ -102,7 +102,7 @@ public class User extends User_Base {
         
     }
     
-/
+
     public Element xmlExport() {
         Element element = new Element("user");
         element.setAttribute("username", getUsername());
