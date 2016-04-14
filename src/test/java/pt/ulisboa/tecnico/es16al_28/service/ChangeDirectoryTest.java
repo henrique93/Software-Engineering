@@ -89,35 +89,51 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         changeService.execute();
     }
 	
-	/*		Absolute path		*/
+    	/*		Absolute path		*/
     @Test
     public void successChangedDirAbsolute() {
         final String dir = "DirTest";
-	final String trashi = "Lixo";	
+	final String trash = "Lixo";	
 	MyDrive mydrive = MyDrive.getInstance();
 	Login logged = mydrive.getLoginByToken(_token);
 	
         User user = new User("Alberto", "1234", "Alberto", "rwxdrwxd", logged);
         Login login = new Login("Alberto", "1234");
-	//Cria Pasta Lixo dentro da pasta do Alberto
-	Dir trash = new Dir(logged, "Lixo");
-	//Vai para a pasta do Alberto        
-	logged.cd(mydrive, "..");
-	
-	//Pasta do Lixo
-        Dir insideDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
+	long token = login.getToken();
 
-	//Vai para a pasta do / ou home       
-	logged.cd(mydrive, "..");
+	//Create Directory Lixo inside Alberto's Directory
+	Dir Trash = new Dir(login, "Lixo");
+
+	//Get directory Lixo
+	Dir insideDir = (Dir) MyDriveService.getMyDrive().getLoginByToken(token).getCurrentDir().getFileByName(trash);
+	//Go to directory root        
+	login.cd(mydrive, "..");
 
         // Change to inside directory(DirTest)
-        ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/home/Alberto/Lixo");
+        ChangeDirectoryService changeService = new ChangeDirectoryService(token, "/home/Alberto/Lixo");
         changeService.execute();
 
-	Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
+	Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(token).getCurrentDir();
 
         // Check if changed Dir to the right one(DirTest)
         assertEquals(currentDir,insideDir);
     }
 
+    @Test
+    public void changedToRootAbsolute() {	
+	MyDrive mydrive = MyDrive.getInstance();
+	Login logged = mydrive.getLoginByToken(_token);
+
+	logged.cd(mydrive, "..");
+
+	
+        // Change to inside directory(DirTest)
+        ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/");
+        changeService.execute();
+
+	Dir currentDir = logged.getCurrentDir();
+
+        // Check if changed Dir to the right one(DirTest)
+        assertEquals(currentDir,mydrive.getRootDir().getParent());
+    }
 }  
