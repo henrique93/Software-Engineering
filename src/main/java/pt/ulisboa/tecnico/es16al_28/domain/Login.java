@@ -85,7 +85,8 @@ public class Login extends Login_Base {
      *  Changes the current directory
      *  @param  name        directory name
      */
-    public String cd(MyDrive mydrive ,String name) throws NoSuchFileOrDirectoryException, NotDirException {
+    public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException {
+        MyDrive mydrive = MyDrive.getInstance();
 		File currentDir;
 		Dir cast;
 		if(name.indexOf('/') == -1){
