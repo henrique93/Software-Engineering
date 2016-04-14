@@ -70,6 +70,16 @@ public class Dir extends Dir_Base {
         return ls;
     }
     
+    public List<String> listD() {
+        List<String> ls = new ArrayList<>();
+        ls.add(toString());
+        ls.add(getParent().toString());
+        for (File file: getFileSet()){
+            ls.add(file.toString());
+        }
+        return ls;
+    }
+    
     /**
      *  Get File inside the current directory by name
      *  @param  name        Name of file
