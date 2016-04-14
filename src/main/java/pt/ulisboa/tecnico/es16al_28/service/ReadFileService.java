@@ -9,33 +9,31 @@ import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotFileException;
 import pt.ulisboa.tecnico.es16al_28.exception.TokenDoesNotExistException;
+import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 public class ReadFileService extends MyDriveService {
 
+    private long _token;
     private String _name;
-    private Long _token;
     private String _result;
 
-    public ReadFileService(String name, Long token) {
+    public ReadFileService(long token, String name) {
     	_name = name;
     	_token = token;
     }
 
     @Override
-    public final void dispatch() throws TokenDoesNotExistException, NoSuchFileOrDirectoryException, NotFileException {
+    public final void dispatch() throws TokenDoesNotExistException, NoSuchFileOrDirectoryException, NotFileException, PermissionDeniedException {
 
-    	MyDrive md = getMyDrive();
-        Login l = md.getLoginByToken(_token);
-
-
-        File f = l.getCurrentDir().getFileByName(_name);
+        Login logged = MyDrive.getInstance().getLoginByToken(_token);
+        File f = logged.getCurrentDir().getFileByName(_name);
 
         if(f.isDir()) {
             throw new NotFileException(_name);
         }
         else {
-            PlainFile a =(PlainFile) f;
-            _result = a.readFile();
+            PlainFile file = (PlainFile)f;
+            _result = file.readFile(logged);
         }
     }
 
