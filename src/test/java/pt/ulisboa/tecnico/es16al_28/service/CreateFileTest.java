@@ -16,6 +16,8 @@ import pt.ulisboa.tecnico.es16al_28.domain.App;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 
 import pt.ulisboa.tecnico.es16al_28.exception.FileAlreadyExistsException;
+import pt.ulisboa.tecnico.es16al_28.exception.CannotCreateWithContentException;
+import pt.ulisboa.tecnico.es16al_28.exception.CannotCreateWithoutContentException;
 
 public class CreateFileTest extends AbstractServiceTest {
 
@@ -70,6 +72,21 @@ public class CreateFileTest extends AbstractServiceTest {
         final String content = "Cool";
         new PlainFile(MyDrive.getInstance().getLoginByToken(_token), file, content);
         CreateFileService service = new CreateFileService(_token, file, "plainfile", content);
+        service.execute();
+    }
+
+    @Test(expected = CannotCreateWithoutContentException.class)
+    public void CreateLinkWithoutContent() {
+        final String file = "Link";
+        CreateFileService service = new CreateFileService(_token, file, "link");
+        service.execute();
+    }
+
+    @Test(expected = CannotCreateWithContentException.class)
+    public void CreateDirWithContent() {
+        final String file = "Dir";
+        final String content = "Cool";
+        CreateFileService service = new CreateFileService(_token, file, "dir", content);
         service.execute();
     }
 
