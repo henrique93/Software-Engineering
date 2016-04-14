@@ -12,6 +12,8 @@ class User {
 }
 
 class Login {
+	String name;
+	String value;
 	Long token;
 	DateTime validity;
 }
