@@ -71,40 +71,102 @@ public class Dir extends Dir_Base {
     }
     
     /**
-     *  Remove a file or an empty directory from the current directory
-     *  @param file     file or directory to be removed
+     *  Get File inside the current directory by name
+     *  @param  name        Name of file
+     *  @return f           File with the name name
      */
-     
-    public void rm(String username, File file) throws PermissionDeniedException, FileNotFoundException, NotEmptyException {
-        User owner = file.getOwner();
-        if ((owner.getUsername() != "root") && (owner.getUsername() != username)) {
-            throw new PermissionDeniedException();
-        }
-        Set entries = getFileSet();
-        if (entries.contains(file)) {
-            if (file instanceof Dir) {
-                Dir dir = (Dir) file;
-                removeDir(dir);
-            }
-            else {
-                removeFile(file);
+
+    public File getFileByName(String name) throws NoSuchFileOrDirectoryException {      
+	for (File f: getFileSet()) {
+            if (f.getName().equals(name)) {
+                return f;
             }
         }
-        else {
-            throw new FileNotFoundException(file.getName());
-        }
+        throw new NoSuchFileOrDirectoryException(name);
     }
-    
+
     /**
-     *  Auxiliar function to rm
-     *  @param dir      directory to be removed
+     *  Checks if the current directory has the file
+     *  @param  name        Name of file
+     *  @return f           File with the name name
      */
-    public void removeDir(Dir dir) throws NotEmptyException {
-        if (dir.getFileCount() > 1) {    /* >0 ou >2 ??? */
-            throw new NotEmptyException(dir.getName());  /* Exception manda o conteudo??? */
+
+    public boolean directoryHasFile(String name) {
+        for (File f: getFileSet()) {
+            if (f.getName().equals(name)) {
+                return true;
+            }
         }
-        else {
-            removeFile(dir);
+        return false;
+    }
+
+    /**
+     *  If user doesnt have permission, it throws an exception
+     *  @param  user        Current user
+     *  @param  file        File to be removed
+     *
+     *  @return true	    Returns true if user has permission, else throws exception
+     */
+
+    public boolean userHasPermissionRemove(User user, File file) throws PermissionDeniedException{
+	
+	if(user.getUmask().charAt(7) != 'd' || file.getPermission().charAt(7) != 'd')
+		if(user.getUsername() != "root" && user.getUsername() != getOwner().getUsername())
+			throw new PermissionDeniedException();
+	return true;
+
+    }
+
+    /**
+     *	File remover : remove especific file inside current Dir except if it finds a Dir, then it proceeds differently
+     */
+    public void removeFile(User user, String name) throws PermissionDeniedException, NoSuchFileOrDirectoryException{
+        if(directoryHasFile(name)){
+		File f = getFileByName(name);
+		if(userHasPermissionRemove(user,f)){
+			if(f.isDir()){
+           			Dir dir = (Dir) f;
+            			if (dir.getFileCount() > 0) {
+                			dir.RmInsideDir(user);
+					dir.remove();
+            			}
+           			else {
+                			dir.remove();
+           			}	
+        		}
+        		else {
+        			f.remove();	
+			}
+		}else{
+			throw new PermissionDeniedException();
+		}
+	}else{
+		throw new NoSuchFileOrDirectoryException(name);
+	}
+    }
+
+    /**
+     *	File remover Inside Dir : remove everything inside and then itself except if it finds a Dir, then it proceeds differently
+     *  @param	user        Current user
+     */
+
+    public void RmInsideDir(User user) throws PermissionDeniedException{	
+        for(File f_inside : getFileSet()){
+            	if(userHasPermissionRemove(user,f_inside)){
+            		if(f_inside.isDir()){
+           		    	Dir dir = (Dir) f_inside;
+				if (dir.getFileCount() > 0) {
+                			dir.RmInsideDir(user);
+					dir.remove();
+            			}
+           			else {
+                			dir.remove();
+           			}
+           		 }
+            		 else{
+             	  		f_inside.remove();
+           		 }
+	   	}	
         }
     }
     
