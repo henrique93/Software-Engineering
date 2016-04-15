@@ -10,26 +10,36 @@ import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 public class PlainFile extends PlainFile_Base {
     
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
     public PlainFile () {
         super();
     }
- 
-    public PlainFile(MyDrive mydrive, String name, String permission, User owner, Dir dir , String app) {
+    
+    /**
+     *  PlainFile constructor
+     *  @param  login       Current MyDrive login
+     *  @param  name        PlainFile's name
+     *  @param  app         PlainFile's content
+     */
+    public PlainFile(Login login, String name, String app) {
         super();
-	setApp(app);
-        init(mydrive, name, permission, owner, dir);
+        init(login.getMydriveL(), name, login.getUser().getUmask(), login.getUser(), login.getCurrentDir());
+        setApp(app);
     }
-
-    public PlainFile(Dir dir, Element xml) throws ImportDocumentException {
-        setDir(dir);
-        xmlImport(xml);
+    
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
+    public PlainFile(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
+    	initxml(mydrive, owner, dir,  xml);
     }
-  
-   
+    
     /**
      *  Reads the content from a file
-     *  @param l     Login reader
-     *  @return string  file's content
+     *  @param  file        File to read the content from
+     *  @return string      File's content
      */
     public String readFile(Login l) throws PermissionDeniedException{
         if(l.getUser().getUmask().charAt(4) == 'r' && getPermission().charAt(4) == l.getUser().getUmask().charAt(4)) {
@@ -39,12 +49,11 @@ public class PlainFile extends PlainFile_Base {
             throw new PermissionDeniedException();
         }
     }
-
-
+     
     /**
      *  Writes content in a file
-     *  @param  l	Login writer
-     *  @param  app	file's content
+     *  @param  file        File to write the content to
+     *  @return string      Content to write
      */
     public void writeFile(Login l,String app) throws PermissionDeniedException {
          if(l.getUser().getUmask().charAt(5) == 'w' && getPermission().charAt(5) == l.getUser().getUmask().charAt(5)) {
@@ -54,24 +63,26 @@ public class PlainFile extends PlainFile_Base {
              throw new PermissionDeniedException();
          }
     }
-
-
-  
     
-    public void xmlImport(Element pfileElement) throws ImportDocumentException {
-    try {
-            setId(pfileElement.getAttribute("id").getIntValue());
-            setName(new String(pfileElement.getAttribute("name").getValue().getBytes("UTF-8")));
-            setLastChange(new String(pfileElement.getAttribute("lastChange").getValue().getBytes("UTF-8")));
-            setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
-            /*setOwner(new String(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));*/
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
+    public void xmlImport(Element plainfileElement) throws ImportDocumentException {
+        
+    	super.xmlImport(plainfileElement);
 
-    } catch (UnsupportedEncodingException | DataConversionException e) {
+    	try {
+            setApp(new String(plainfileElement.getAttribute("app").getValue().getBytes("UTF-8")));
+
+	} catch (UnsupportedEncodingException e) {
             throw new ImportDocumentException();
         }
     }
     
-     public Element xmlExport() {
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
+    public Element xmlExport() {
         Element element = super.xmlExport();
         element.setAttribute("app", getApp());
 	element.setName("PlainFile");
