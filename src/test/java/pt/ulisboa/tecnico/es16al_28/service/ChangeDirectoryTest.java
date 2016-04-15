@@ -25,16 +25,13 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     }
 	
 
-	/*	Change Directory relative	*/
+/*	TESTS WITHOUT ABSOLUTE PATH	*/
     @Test
     public void successChangedDir() {
         final String dir = "DirTest";	
         Dir insideDir = (Dir) MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir().getFileByName(dir);
-	
-        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
-	
         Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check if changed Dir to the right one(DirTest)
@@ -45,11 +42,8 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     public void changeToItself() {
         final String dir = ".";	
         Dir rootDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
-	
-        // Change to Itself(root)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
-	
         Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check changed Dir to himself(root)
@@ -61,15 +55,10 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         final String dir = "DirTest";	
         final String parent = "..";
         Dir rootDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
-	
-        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
-	
-        //Change to parent directory (root)
         ChangeDirectoryService change2Service = new ChangeDirectoryService(_token, parent);
         change2Service.execute();
-	
         Dir parentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check changed Dir to the right one
@@ -89,27 +78,19 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         changeService.execute();
     }
 	
-	/*		Absolute path		*/
+/*		TESTS WITH ABSOLUTE PATH		*/
     @Test
     public void successChangedDirAbsolute() {
         final String dir = "DirTest";
 	final String trash = "Lixo";	
 	MyDrive mydrive = MyDrive.getInstance();
 	Login logged = mydrive.getLoginByToken(_token);
-	
         User user = new User("Alberto", "1234", "Alberto", "rwxdrwxd", logged);
         Login login = new Login("Alberto", "1234");
 	long token = login.getToken();
-
-	//Create Directory Lixo inside Alberto's Directory
 	Dir Trash = new Dir(login, "Lixo");
-
-	//Get directory Lixo
 	Dir insideDir = (Dir) MyDriveService.getMyDrive().getLoginByToken(token).getCurrentDir().getFileByName(trash);
-	//Go to directory root        
 	login.cd("..");
-
-        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(token, "/home/Alberto/Lixo");
         changeService.execute();
 
@@ -123,14 +104,9 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     public void changedToRootAbsolute() {	
 	MyDrive mydrive = MyDrive.getInstance();
 	Login logged = mydrive.getLoginByToken(_token);
-
 	logged.cd("..");
-
-	
-        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/");
         changeService.execute();
-
 	Dir currentDir = logged.getCurrentDir();
 
         // Check if changed Dir to the right one(DirTest)
@@ -139,11 +115,8 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     
     @Test(expected = NoSuchFileOrDirectoryException.class)
     public void NoSuchDirAbsolute() {
-		MyDrive mydrive = MyDrive.getInstance();
-		Login logged = mydrive.getLoginByToken(_token);
-
-
-        // Change to inside directory(DirTest)
+	MyDrive mydrive = MyDrive.getInstance();
+	Login logged = mydrive.getLoginByToken(_token);
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/home/root/Atum");
         changeService.execute();
     }
