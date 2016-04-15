@@ -67,9 +67,7 @@ public class Dir extends Dir_Base {
         init(login.getMydriveL(), name, login.getUser().getUmask(), login.getUser(), login.getCurrentDir());
     }
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
+    
     public Dir(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	initxml(mydrive, owner, dir,  xml);
     }
@@ -211,7 +209,6 @@ public class Dir extends Dir_Base {
      *	File remover Inside Dir : remove everything inside and then itself except if it finds a Dir, then it proceeds differently
      *  @param	user        Current user
      */
-
     public void RmInsideDir(User user) throws PermissionDeniedException{	
         for(File f_inside : getFileSet()){
             	if(userHasPermissionRemove(user,f_inside)){
@@ -253,9 +250,7 @@ public class Dir extends Dir_Base {
     	super.xmlImport(dirElement);
     }
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
+
     public Element xmlExport() {
         Element element = super.xmlExport();
         element.setName("Dir");
