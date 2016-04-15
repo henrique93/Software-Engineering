@@ -28,7 +28,7 @@ public class PlainFile extends PlainFile_Base {
    
     /**
      *  Reads the content from a file
-     *  @param file     file to read the content from
+     *  @param l     Login reader
      *  @return string  file's content
      */
     public String readFile(Login l) throws PermissionDeniedException{
@@ -43,8 +43,8 @@ public class PlainFile extends PlainFile_Base {
 
     /**
      *  Writes content in a file
-     *  @param  file        File to write the content to
-     *  @return string      Content to write
+     *  @param  l	Login writer
+     *  @param  app	file's content
      */
     public void writeFile(Login l,String app) throws PermissionDeniedException {
          if(l.getUser().getUmask().charAt(5) == 'w' && getPermission().charAt(5) == l.getUser().getUmask().charAt(5)) {

@@ -2,8 +2,9 @@ package pt.ulisboa.tecnico.es16al_28.domain;
 
 import org.jdom2.Element;
 
-import java.util.Set;
-import java.util.Iterator;
+import java.util.*;
+
+
 
 /* Import exceptions */
 import java.io.UnsupportedEncodingException;
@@ -19,48 +20,63 @@ public class Dir extends Dir_Base {
     
     /**
      *  Special constructor for directory "/"
+     *  @param  mydrive     MyDrive application
      */
     public Dir(MyDrive mydrive) {
         super();
-        setParent(this);
         init(mydrive, "/", "rwxdr-x-", mydrive.getSuperUser(), this);
     }
 
     /**
      *  Special constructor for directory "home"
-     *  @param id
-     *  @param dir  directory "/"
+     *  @param  mydrive     MyDrive application
+     *  @param  dir         directory "/"
      */
     public Dir(MyDrive mydrive, Dir dir) {
         super();
-        setParent(dir);
         init(mydrive, "home", "rwxdr-x-", mydrive.getSuperUser(), dir);
     }
-    
+
     /**
-     *  Common directory constructor
+     *  Special constructor for user's home directory
+     *  @param  login       Current MyDrive login
+     *  @param  name        Directory's name
      */
-    public Dir(MyDrive mydrive, String name, String permission, User owner, Dir dir) throws FileAlreadyExistsException {
+    public Dir(Login login, String name, String permission, User user) throws FileAlreadyExistsException {
         super();
         for (File file: getFileSet()) {
             if (file.getName() == name) {
                 throw new FileAlreadyExistsException(name);
             }
         }
-        setParent(dir);
-        init(mydrive, name, permission, owner, dir);
+        init(login.getMydriveL(), name, permission, user, login.getMydriveL().getRootDir());
     }
-    
-    
-    
-    
-    public Dir(Dir dir, Element xml) throws ImportDocumentException {
-        setDir(dir);
-        xmlImport(xml);
+
+    /**
+     *  Common directory constructor
+     *  @param  login       Current MyDrive login
+     *  @param  name        Directory's name
+     */
+    public Dir(Login login, String name) throws FileAlreadyExistsException {
+        super();
+        for (File file: getFileSet()) {
+            if (file.getName() == name) {
+                throw new FileAlreadyExistsException(name);
+            }
+        }
+        init(login.getMydriveL(), name, login.getUser().getUmask(), login.getUser(), login.getCurrentDir());
     }
     
     /**
-     *  Directory's simple listing
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
+    public Dir(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
+    	initxml(mydrive, owner, dir,  xml);
+    }
+    
+    /**
+     *  Directory's simple listing. Lists every file in this directory
+     *  @return ls          List of every file in this directory
      */
     public String listDir() {
         String ls = ".\n..\n"; /* . e .. ou nomes??? */
@@ -70,14 +86,60 @@ public class Dir extends Dir_Base {
         return ls;
     }
     
+
     /**
+     *  Directory's simple listing. Lists every file in this directory
+     *  @return ls          List of every file in this directory
+     */
+    public List<String> listD() {
+        List<String> ls = new ArrayList<>();
+        ls.add(toString());
+        ls.add(getParent().toString());
+        for (File file: getFileSet()){
+            ls.add(file.toString());
+        }
+        return ls;
+    }
+    
+    
+    /**
+     *  Remove a file or an empty directory from the current directory if the user has permission.
+     *  @param  username    Current user's username
+     *  @param  file        File to be removed
+     */
+    public void rm(String username, File file) throws PermissionDeniedException, FileNotFoundException, NotEmptyException {
+        User owner = file.getOwner();
+        if ((owner.getUsername() != "root") && (owner.getUsername() != username)) {
+            throw new PermissionDeniedException();
+        }
+        Set entries = getFileSet();
+        if (entries.contains(file)) {
+            if (file instanceof Dir) {
+                Dir dir = (Dir) file;
+                if (dir.getParent().equals(dir)) {
+                    throw new PermissionDeniedException();
+                }
+                else if (dir.getFileCount() > 1) {
+                    throw new NotEmptyException(dir.getName());
+                }
+            }
+            removeFile(file);
+            remove();
+        }
+        else {
+            throw new FileNotFoundException(file.getName());
+        }
+    }
+
+
+   /**
      *  Get File inside the current directory by name
      *  @param  name        Name of file
      *  @return f           File with the name name
      */
 
-    public File getFileByName(String name) throws NoSuchFileOrDirectoryException {      
-	for (File f: getFileSet()) {
+    public File getFileByName(String name) throws NoSuchFileOrDirectoryException {
+        for (File f: getFileSet()) {
             if (f.getName().equals(name)) {
                 return f;
             }
@@ -169,51 +231,48 @@ public class Dir extends Dir_Base {
 	   	}	
         }
     }
-    
-    /**
-     *  Muda de directorio
-     *  @return dir     directory to change to
-     */
-    public Dir cd(MyDrive mydrive, Dir currentDir, String arg) throws NoSuchFileOrDirectoryException {
-        Set entries = currentDir.getFileSet();
-        if (arg == ".") {
-            return currentDir;
-        }
-        else if (arg == "..") {
-            return currentDir.getParent();
-        }
-        else if (arg != null) {
-            return currentDir; //FIXME
-        }
-        else {
-            throw new NoSuchFileOrDirectoryException(arg);
-        }
-    }
+     
+
+     /**
+      * Get the absolute path of the Dir
+      * @return path        Dir path
+      */
+	public String absolutePath(){
+	String path = getName();
+	if(path.equals(getParent().getName()))
+		return path;
+	else 
+		return (path + "/" + getParent().absolutePath());
+	}
     
     /**
      *  xmlImport function
      *  @param pfileElement     list of files to import for this user
      */
-    public void xmlImport(Element pfileElement) throws ImportDocumentException {
-        try {
-            setId(pfileElement.getAttribute("id").getIntValue());
-            setName(new String(pfileElement.getAttribute("name").getValue().getBytes("UTF-8")));
-            setLastChange(new String(pfileElement.getAttribute("lastChange").getValue().getBytes("UTF-8")));
-            setPermission(new String(pfileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
-            /*setOwner(new User(pfileElement.getAttribute("owner").getValue().getBytes("UTF-8")));*/
-
-        } catch (UnsupportedEncodingException | DataConversionException e) {
-            throw new ImportDocumentException();
-        }
+    public void xmlImport(Element dirElement) throws ImportDocumentException {
+    	super.xmlImport(dirElement);
     }
-
+    
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
     public Element xmlExport() {
         Element element = super.xmlExport();
-	element.setName("Dir");
-	for (File f: getFileSet())
-            element.addContent(f.xmlExport());
-        return element; 
+        element.setName("Dir");
+        for (File f: getFileSet())
+                element.addContent(f.xmlExport());
+            return element;
+        }
+
+    @Override
+    public boolean isDir(){
+        return true;
     }
 
-    
+    @Override
+    public boolean isFile(){
+        return false;
+    }
+
+
 }

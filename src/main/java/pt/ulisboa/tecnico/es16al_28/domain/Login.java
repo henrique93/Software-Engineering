@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.es16al_28.domain;
 
+import java.util.*;
 import java.math.BigInteger;
 import java.util.Random;
 import org.joda.time.DateTime;
@@ -85,36 +86,43 @@ public class Login extends Login_Base {
      *  Changes the current directory
      *  @param  name        directory name
      */
-    public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException {
-        MyDrive mydrive = MyDrive.getInstance();
-		File currentDir;
-		Dir cast;
-		if(name.indexOf('/') == -1){
+     public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException {
+     	File currentFile;
+	Dir cast;
+	if(name.indexOf('/') == -1){
         	if (name == ".");
         	else if (name == "..")
         		setCurrentDir(getCurrentDir().getParent());
         	else {
-            	currentDir = getCurrentDir().getFileByName(name);
-            	if(currentDir.isDir()){
-		    	cast = (Dir) currentDir;
-		    	setCurrentDir(cast);
+            		currentFile = getCurrentDir().getFileByName(name);
+            		if(currentFile.isDir()){
+		    		cast = (Dir) currentFile;
+		   		 setCurrentDir(cast);
 		    	}
 		    	else throw new NotDirException(name);
-		    }
 		}
-		else{
-			String[] path = name.split("/");
-			setCurrentDir(mydrive.getRootDir());
-			for(String s: path)
-				if(!s.equals("")){
-					currentDir = getCurrentDir().getFileByName(name);
-            		if(currentDir.isDir()){
-		    		cast = (Dir) currentDir;
-		    		setCurrentDir(cast);
+	}
+	else {
+		setCurrentDir(MyDrive.getInstance().getRootDir().getParent());
+		if(name == "/"){
+			return (getCurrentDir().absolutePath());
+		}
+		String p = name.substring(1);
+		for(String v: p.split("/")){
+			if (getCurrentDir().directoryHasFile(v)){
+				currentFile = getCurrentDir().getFileByName(v);
+            			if(currentFile.isDir()){
+		    			cast = (Dir) currentFile;
+		    			setCurrentDir(cast);
 		    		}
-		    		else throw new NotDirException(name);
-		    	}
+		    		else throw new NotDirException(v);
+			}
+			else { 
+				if(v !="home" && getCurrentDir().getName() == "/")
+					throw new NoSuchFileOrDirectoryException(v);
+			}		
 		}
+	}
 	return (getCurrentDir().absolutePath());
     }
 
