@@ -89,7 +89,7 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         changeService.execute();
     }
 	
-    	/*		Absolute path		*/
+	/*		Absolute path		*/
     @Test
     public void successChangedDirAbsolute() {
         final String dir = "DirTest";
@@ -107,7 +107,7 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
 	//Get directory Lixo
 	Dir insideDir = (Dir) MyDriveService.getMyDrive().getLoginByToken(token).getCurrentDir().getFileByName(trash);
 	//Go to directory root        
-	login.cd(mydrive, "..");
+	login.cd("..");
 
         // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(token, "/home/Alberto/Lixo");
@@ -124,7 +124,7 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
 	MyDrive mydrive = MyDrive.getInstance();
 	Login logged = mydrive.getLoginByToken(_token);
 
-	logged.cd(mydrive, "..");
+	logged.cd("..");
 
 	
         // Change to inside directory(DirTest)
@@ -136,4 +136,17 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         // Check if changed Dir to the right one(DirTest)
         assertEquals(currentDir,mydrive.getRootDir().getParent());
     }
-}  
+    
+    @Test(expected = NoSuchFileOrDirectoryException.class)
+    public void NoSuchDirAbsolute() {
+		MyDrive mydrive = MyDrive.getInstance();
+		Login logged = mydrive.getLoginByToken(_token);
+
+
+        // Change to inside directory(DirTest)
+        ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/home/root/Atum");
+        changeService.execute();
+    }
+
+
+}
