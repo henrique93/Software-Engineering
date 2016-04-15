@@ -15,7 +15,7 @@ public class DeleteFileService extends MyDriveService {
     private long _token;
     private String _name;
 
-    public DeleteFileService(String name, long token) {
+    public DeleteFileService(long token, String name) {
         _token = token;
         _name = name;
     }
