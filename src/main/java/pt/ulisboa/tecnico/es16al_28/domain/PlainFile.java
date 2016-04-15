@@ -10,9 +10,6 @@ import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 public class PlainFile extends PlainFile_Base {
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
     public PlainFile () {
         super();
     }
@@ -29,9 +26,7 @@ public class PlainFile extends PlainFile_Base {
         setApp(app);
     }
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
+
     public PlainFile(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	initxml(mydrive, owner, dir,  xml);
     }
@@ -64,9 +59,7 @@ public class PlainFile extends PlainFile_Base {
          }
     }
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
+
     public void xmlImport(Element plainfileElement) throws ImportDocumentException {
         
     	super.xmlImport(plainfileElement);
@@ -79,9 +72,7 @@ public class PlainFile extends PlainFile_Base {
         }
     }
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
+
     public Element xmlExport() {
         Element element = super.xmlExport();
         element.setAttribute("app", getApp());
