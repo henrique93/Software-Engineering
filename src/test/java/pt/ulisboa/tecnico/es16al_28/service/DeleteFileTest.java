@@ -39,13 +39,13 @@ public class DeleteFileTest extends AbstractServiceTest {
         final String app = "AppTest";
         final String plainfile = "PlainFileTest";
         final String dir = "DirTest";
-        DeleteFileService linkService = new DeleteFileService(link, _token);
+        DeleteFileService linkService = new DeleteFileService(_token, link);
         linkService.execute();
-        DeleteFileService appService = new DeleteFileService(app, _token);
+        DeleteFileService appService = new DeleteFileService(_token, app);
         appService.execute();
-        DeleteFileService plainFileService = new DeleteFileService(plainfile, _token);
+        DeleteFileService plainFileService = new DeleteFileService(_token, plainfile);
         plainFileService.execute();
-        DeleteFileService dirService = new DeleteFileService(dir, _token);
+        DeleteFileService dirService = new DeleteFileService(_token, dir);
         dirService.execute();
         Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
@@ -61,10 +61,10 @@ public class DeleteFileTest extends AbstractServiceTest {
         final String file = "DirTest";
         MyDrive mydrive = MyDrive.getInstance();
         Login logged = mydrive.getLoginByToken(_token);
-        logged.cd(mydrive, "DirTest");
+        logged.cd("DirTest");
         Link trash = new Link(logged, "LinkTest2", "DELETE.TEST");
-        logged.cd(mydrive, "..");
-        DeleteFileService service = new DeleteFileService(file, _token);
+        logged.cd("..");
+        DeleteFileService service = new DeleteFileService(_token, file);
         service.execute();
 
         // Check if directory was removed
@@ -74,7 +74,7 @@ public class DeleteFileTest extends AbstractServiceTest {
     @Test(expected = NoSuchFileOrDirectoryException.class)
     public void DeleteNonexistingFile() {
         final String file = "DoesNotExist";
-        DeleteFileService service = new DeleteFileService(file, _token);
+        DeleteFileService service = new DeleteFileService(_token, file);
         service.execute();
     }
 
@@ -85,10 +85,10 @@ public class DeleteFileTest extends AbstractServiceTest {
         Login logged = mydrive.getLoginByToken(_token);
         User user = new User("Alberto", "1234", "Alberto", "rwxdr-x-", logged);
         Login login = new Login("Alberto", "1234");
-        login.cd(mydrive, "..");
-        login.cd(mydrive, "root");
+        login.cd("..");
+        login.cd("root");
         long token = login.getToken();
-        DeleteFileService service = new DeleteFileService(file, token);
+        DeleteFileService service = new DeleteFileService(token, file);
         service.execute();
     }
 
