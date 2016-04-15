@@ -38,21 +38,25 @@ public class ListDirectoryTest extends AbstractServiceTest {
         List<String> ps = service.result();
         
         // Check list
-        assertEquals(dir1.toString(), ps.get(0));
-        assertEquals(dir2.toString(), ps.get(1));
-        assertEquals(link.toString(), ps.get(2));
-        assertEquals(app.toString(), ps.get(3));
-        assertEquals(plainfile.toString(), ps.get(4));
+        assertEquals(l.getCurrentDir().toString(), ps.get(0));
+        assertEquals(l.getCurrentDir().getParent().toString(), ps.get(1));
+        assertEquals(dir1.toString(), ps.get(2));
+        assertEquals(dir2.toString(), ps.get(3));
+        assertEquals(link.toString(), ps.get(4));
+        assertEquals(app.toString(), ps.get(5));
+        assertEquals(plainfile.toString(), ps.get(6));
     }
 
     @Test
     public void successEmptyDirectory() {
+        Login l = MyDrive.getInstance().getLoginByToken(_token);
         ListDirectoryService service = new ListDirectoryService(_token);
         service.execute();
         List<String> ps = service.result();
 
         // Check list
-        assertEquals(true, ps.isEmpty());
+        assertEquals(l.getCurrentDir().toString(), ps.get(0));
+        assertEquals(l.getCurrentDir().getParent().toString(), ps.get(1));
     }
 
 }
