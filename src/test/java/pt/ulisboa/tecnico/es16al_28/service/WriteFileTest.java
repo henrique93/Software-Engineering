@@ -13,8 +13,8 @@ import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 public class WriteFileTest extends AbstractServiceTest {
-
-	private long _token;
+	
+    private long _token;
 
     protected void populate() {
         MyDrive md = MyDrive.getInstance();
@@ -30,9 +30,6 @@ public class WriteFileTest extends AbstractServiceTest {
         _token = l.getToken();
     }
 
-// TESTS for PlainFiles, Apps and Links
-
-// testing: PlainFile content ( same for re-writing a file )
     @Test
     public void success() {
     	final String content = "agora é isto 2";
@@ -44,8 +41,6 @@ public class WriteFileTest extends AbstractServiceTest {
         assertEquals(content, f.readFile(l));
     }
 
-
-// testing: writing in a non existing file
     @Test(expected = NoSuchFileOrDirectoryException.class)
     public void writeNonExistingFile() {
     	 final String content = "vai dar erro";
@@ -54,8 +49,6 @@ public class WriteFileTest extends AbstractServiceTest {
         service.execute();
     }
 
-
-// testing: writing in a file without permission   
    @Test(expected = PermissionDeniedException.class)
    public void writeFileWithoutPermission() {
        final String file = "aaa";
@@ -70,7 +63,6 @@ public class WriteFileTest extends AbstractServiceTest {
        long token = l.getToken();
        WriteFileService service = new WriteFileService(token, file, content);
        service.execute();
-	
    }
 
 
