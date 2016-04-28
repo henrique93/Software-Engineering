@@ -11,11 +11,18 @@ class User {
 	String umask;
 }
 
+class SuperUser extends User;
+
+class Guest extends User;
+
 class Login {
-	String name;
-	String value;
 	Long token;
 	DateTime validity;
+}
+
+class EnvironmentVariable {
+	String name;
+	String value;
 }
 
 class File {
@@ -76,6 +83,13 @@ relation LoginHasCwd {
 	}
 }
 
+relation LoginHasEnviromentVariable {
+	Login playsRole login;
+	EnvironmentVariable playsRole envVar {
+		multiplicity *;
+	}
+}
+
 relation FileHasOwner {
 	File playsRole file{
 		multiplicity *;
@@ -96,7 +110,16 @@ relation MyDriveContainsSuperUser {
 	MyDrive playsRole mydriveU {
 		multiplicity 1;
 	}
-	User playsRole superUser {
+	SuperUser playsRole superUser {
+		multiplicity 1;
+	}
+}
+
+relation MyDriveContainsGuest {
+	MyDrive playsRole mydriveG {
+		multiplicity 1;
+	}
+	Guest playsRole guest {
 		multiplicity 1;
 	}
 }
