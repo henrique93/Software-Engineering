@@ -13,6 +13,8 @@ import pt.ulisboa.tecnico.es16al_28.domain.Link;
 import pt.ulisboa.tecnico.es16al_28.domain.App;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 import pt.ulisboa.tecnico.es16al_28.domain.Dir;
+import pt.ulisboa.tecnico.es16al_28.service.dto.ListDto;
+
 
 
 public class ListDirectoryTest extends AbstractServiceTest {
@@ -35,16 +37,16 @@ public class ListDirectoryTest extends AbstractServiceTest {
 
         ListDirectoryService service = new ListDirectoryService(_token);
         service.execute();
-        List<String> ps = service.result();
+        List<ListDto> ps = service.result();
         
         // Check list
-        assertEquals(l.getCurrentDir().toString(), ps.get(0));
-        assertEquals(l.getCurrentDir().getParent().toString(), ps.get(1));
-        assertEquals(dir1.toString(), ps.get(2));
-        assertEquals(dir2.toString(), ps.get(3));
-        assertEquals(link.toString(), ps.get(4));
-        assertEquals(app.toString(), ps.get(5));
-        assertEquals(plainfile.toString(), ps.get(6));
+        assertEquals(l.getCurrentDir().getName(), ps.get(0).getName());
+        assertEquals(l.getCurrentDir().getParent().getPermission(), ps.get(1).getPermission());
+        assertEquals(dir1.getName(), ps.get(2).getName());
+        assertEquals(dir2.getId(), ps.get(3).getId());
+        assertEquals(link.getPermission(), ps.get(4).getPermission());
+        assertEquals(app.getLastChange(), ps.get(5).getLastChange());
+        assertEquals(plainfile.getOwner().toString(), ps.get(6).getOwner());
     }
 
     @Test
@@ -52,11 +54,11 @@ public class ListDirectoryTest extends AbstractServiceTest {
         Login l = MyDrive.getInstance().getLoginByToken(_token);
         ListDirectoryService service = new ListDirectoryService(_token);
         service.execute();
-        List<String> ps = service.result();
+        List<ListDto> ps = service.result();
 
         // Check list
-        assertEquals(l.getCurrentDir().toString(), ps.get(0));
-        assertEquals(l.getCurrentDir().getParent().toString(), ps.get(1));
+        assertEquals(l.getCurrentDir().getName(), ps.get(0).getName());
+        assertEquals(l.getCurrentDir().getParent().getLastChange(), ps.get(1).getLastChange());
     }
 
 }
