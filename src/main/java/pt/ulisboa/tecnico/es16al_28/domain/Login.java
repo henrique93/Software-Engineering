@@ -113,14 +113,15 @@ public class Login extends Login_Base {
         String username = getUser().getUsername();
         DateTime now = new DateTime();
         Interval interval = new Interval(getValidity(), now);
+        long duration = interval.toDurationMillis();
         if (username.equals("nobody")) {
             return true;
         }
-        if (interval.toDurationMillis() > 3600000) {
+        if (duration > 3600000) {
             return false;
         }
         if (username.equals("root")) {
-            if (interval.toDurationMillis() > 600000) {
+            if (duration > 600000) {
                 return false;
             }
             return true;
@@ -128,6 +129,14 @@ public class Login extends Login_Base {
         super.setValidity(now);
         return true;
     }
+
+    /*
+    public dto getEVList {
+        getEnvVarSet();
+    }*/
+
+
+    
 
     /**
      *  Changes the current directory

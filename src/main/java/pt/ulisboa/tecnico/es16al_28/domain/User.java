@@ -11,24 +11,15 @@ import pt.ulisboa.tecnico.es16al_28.exception.ImportUserException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotFileException;
 import pt.ulisboa.tecnico.es16al_28.exception.UserAlreadyExistsException;
 import pt.ulisboa.tecnico.es16al_28.exception.InvalidUsernameException;
+import pt.ulisboa.tecnico.es16al_28.exception.InvalidPasswordException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 public class User extends User_Base {
-    
-    /**
-     *  Super User special constructor
-     */
-    public User(MyDrive mydrive) {
-        setUsername("root");
-        setPassword("rootroot");
-        setName("Super User");
-        setUmask("rwxdr-x-");
-        setMydrive(mydrive);
-        Login login = new Login("root", "rootroot");
-        setDir(new Dir(login, "root", "rwxdr-x-", this));
-	
+
+    public User() {
+        super();
     }
-    
+
     /**
      *  User constructor
      *  @param  username    User's username
@@ -36,36 +27,68 @@ public class User extends User_Base {
      *  @param  umask       User's mask
      *  @param  mydrive     MyDrive application
      */
-    public User(String username, String password, String name, String umask, Login login) throws UserAlreadyExistsException , InvalidUsernameException, PermissionDeniedException {
+    public User(String username, String password, String name, String umask, Login login) throws UserAlreadyExistsException , InvalidUsernameException, InvalidPasswordException, PermissionDeniedException {
         Pattern p = Pattern.compile("[^A-Za-z0-9]");
         Matcher m = p.matcher(username);
+        MyDrive mydrive = login.getMydriveL();
         if (!(login.getUser().equals(login.getMydriveL().getUserByUsername("root")))) {
             throw new PermissionDeniedException();
         }
         if (m.find() || (username.length() < 3)) {
             throw new InvalidUsernameException(username);
         }
-        for (User u: login.getMydriveL().getUserSet()) {
-            if (u.getUsername() == username) {
+        if (password.length() < 8) {
+            throw new InvalidPasswordException();
+        }
+        for (User u: mydrive.getUserSet()) {
+            if (u.getUsername().equals(username)) {
                 throw new UserAlreadyExistsException(username);
             }
         }
         Dir home = new Dir(login, name, umask, this);
-        setUsername(username);
-        setPassword(password);
-        setName(name);
-        setUmask(umask);
-        setDir(home);
-        setMydrive(login.getMydriveL());
+        super.setUsername(username);
+        super.setPassword(password);
+        super.setName(name);
+        super.setUmask(umask);
+        super.setDir(home);
+        super.setMydrive(login.getMydriveL());
 	
     }
-    
+
+    /**
+     *  User initializer
+     *  @param  username    User's username
+     *  @param  password    User's password
+     *  @param  name        User's name
+     *  @param  umask       User's mask
+     *  @param  mydrive     MyDrive application
+     */
+    public void init(String username, String password, String name, String umask, MyDrive mydrive) {
+        super.setUsername(username);
+        super.setPassword(password);
+        super.setName(name);
+        super.setUmask(umask);
+        super.setMydrive(mydrive);
+        if (password == null) {
+            Login login = new Login(username);
+            super.setDir(new Dir(login, username, umask, this));
+        }
+        else {
+            Login login = new Login(username, password);
+            super.setDir(new Dir(login, username, umask, this));
+        }
+    }
+
     /**
      *  User XML constructor
      *  @param  mydrive     MyDrive application
      *  @param  xml	xml element
      */
     public User(MyDrive mydrive, Element xml) throws ImportDocumentException, NotFileException {
+        initxml(mydrive,xml);
+    }
+
+    public void initxml(MyDrive mydrive, Element xml) throws ImportDocumentException, NotFileException {
         setMydrive(mydrive);
         xmlImport(xml);
     }
@@ -76,10 +99,10 @@ public class User extends User_Base {
             f.remove();
 
         try {
-            setUsername(new String(userElement.getAttribute("username").getValue().getBytes("UTF-8")));
-            setPassword(new String(userElement.getAttribute("password").getValue().getBytes("UTF-8")));
-            setName(new String(userElement.getAttribute("name").getValue().getBytes("UTF-8")));
-            setUmask(new String(userElement.getAttribute("umask").getValue().getBytes("UTF-8")));
+            super.setUsername(new String(userElement.getAttribute("username").getValue().getBytes("UTF-8")));
+            super.setPassword(new String(userElement.getAttribute("password").getValue().getBytes("UTF-8")));
+            super.setName(new String(userElement.getAttribute("name").getValue().getBytes("UTF-8")));
+            super.setUmask(new String(userElement.getAttribute("umask").getValue().getBytes("UTF-8")));
             
         }   catch (UnsupportedEncodingException e) {
                 throw new ImportDocumentException();
@@ -119,13 +142,27 @@ public class User extends User_Base {
      */
     public void remove() {
         Dir home = getDir();
-        for (File f: home.getFile()) {
-            f.remove();
+        for (File file: home.getFile()) {
+            file.remove();
         }
-        setMydrive(null);
+        super.setMydrive(null);
         deleteDomainObject();
     }
-    
+
+    /**
+     *  Check if the given password is the same as this user's password
+     *  @param  password
+     *  @return boolean     true if the password is correct, false otherwise
+     */
+    public boolean checkPassword(String password) {
+        if (password.equals(super.getPassword())) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     /**
      *  User's description
      *  Example:
@@ -134,5 +171,42 @@ public class User extends User_Base {
     @Override
     public String toString() {
         return "Name:" + getName() + "Username:" + getUsername() + "Umask:" + getUmask();
+    }
+
+
+    /* OVERRIDE GETTERS AND SETTERS FOR SECURITY */
+    @Override
+    public String getPassword() throws PermissionDeniedException {
+        throw new PermissionDeniedException();
+    }
+
+    @Override
+    public void setPassword(String password) throws PermissionDeniedException {
+        throw new PermissionDeniedException();
+    }
+
+    @Override
+    public void setUsername(String username) throws PermissionDeniedException {
+        throw new PermissionDeniedException();
+    }
+
+    @Override
+    public void setName(String name) throws PermissionDeniedException {
+        throw new PermissionDeniedException();
+    }
+
+    @Override
+    public void setMydrive(MyDrive mydrive) throws PermissionDeniedException {
+        throw new PermissionDeniedException();
+    }
+
+    @Override
+    public void setDir(Dir dir) throws PermissionDeniedException {
+        throw new PermissionDeniedException();
+    }
+
+    @Override
+    public void setUmask(String umask) throws PermissionDeniedException {
+        throw new PermissionDeniedException();
     }
 }
