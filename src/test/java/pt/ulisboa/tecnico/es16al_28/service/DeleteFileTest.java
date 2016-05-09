@@ -83,8 +83,8 @@ public class DeleteFileTest extends AbstractServiceTest {
         final String file = "LinkTest";
         MyDrive mydrive = MyDriveService.getMyDrive();
         Login logged = mydrive.getLoginByToken(_token);
-        User user = new User("Alberto", "1234", "Alberto", "rwxdr-x-", logged);
-        Login login = new Login("Alberto", "1234");
+        User user = new User("Alberto", "12345678", "Alberto", "rwxdr-x-", logged);
+        Login login = new Login("Alberto", "12345678");
         login.cd("..");
         login.cd("root");
         long token = login.getToken();
