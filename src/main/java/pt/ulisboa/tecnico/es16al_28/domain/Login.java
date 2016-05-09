@@ -8,6 +8,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
+import pt.ulisboa.tecnico.es16al_28.domain.EnvironmentVariable;
 
 import pt.ulisboa.tecnico.es16al_28.exception.UserDoesNotExistException;
 import pt.ulisboa.tecnico.es16al_28.exception.IncorrectPasswordException;
@@ -17,6 +18,7 @@ import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotDirException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 import pt.ulisboa.tecnico.es16al_28.exception.CannotLoginException;
+import pt.ulisboa.tecnico.es16al_28.exception.EnvironmentVariableDoesNotExistException;
 
 public class Login extends Login_Base {
     
@@ -36,43 +38,13 @@ public class Login extends Login_Base {
         if (user == null) {
             throw new UserDoesNotExistException(username);
         }
-        if (!user.checkPassword(password)) {
-            throw new IncorrectPasswordException();
-        }
-        if (password.length() < 8) {
-            throw new CannotLoginException();
-        }
-        super.setUser(user);
-        super.setCurrentDir(user.getDir());
-        long token = new BigInteger(64, new Random()).longValue();
-        while (mydrive.isLogged(token)) {
-            token = new BigInteger(64, new Random()).longValue();
-        }
-        super.setToken(token);
-        super.setValidity(new DateTime());
-        if (mydrive.getLogedCount() > 0) {
-            for (Login login : mydrive.getLogedSet()) {
-                if ((login.getUser() != null) && !login.CheckValidity()) {    //VERIFICACAO DO USER=NULL COMO E QUE PODE ESTAR NULL???
-                    login.removeLogin();
-                }
-            }
-        }
-        super.setMydriveL(mydrive);
-    }
-
-    /**
-     *  Special Login constructor for user Guest
-     *  @param  mydrive     MyDrive application
-     *  @param  username    User's username
-     */
-    public Login(String username) throws UserDoesNotExistException, IncorrectPasswordException{
         if (!username.equals("nobody")) {
-            throw new IncorrectPasswordException();
-        }
-        MyDrive mydrive = MyDrive.getInstance();
-        User user = mydrive.getUserByUsername(username);
-        if (user == null) {
-            throw new UserDoesNotExistException(username);
+            if (!user.checkPassword(password)) {
+                throw new IncorrectPasswordException();
+            }
+            if (password.length() < 8) {
+                throw new CannotLoginException();
+            }
         }
         super.setUser(user);
         super.setCurrentDir(user.getDir());
@@ -176,6 +148,16 @@ public class Login extends Login_Base {
 	return (getCurrentDir().absolutePath());
     }*/
 
+    public EnvironmentVariable getEvByName(String name) throws EnvironmentVariableDoesNotExistException {
+        for (EnvironmentVariable ev : getEnvVarSet()) {
+            String evName = ev.getName();
+            if (evName.equals(name)) {
+                return ev;
+            }
+        }
+        throw new EnvironmentVariableDoesNotExistException(name);
+    }
+
 	public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException {
 		File currentFile;
 		Dir cast;
@@ -208,7 +190,6 @@ public class Login extends Login_Base {
 		    			else throw new NotDirException(v);
 				}
                 else {
-					if (v !="home" && getCurrentDir().getName() == "/")
 						throw new NoSuchFileOrDirectoryException(v);
 				}		
             }
