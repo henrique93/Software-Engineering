@@ -3,16 +3,14 @@ package pt.ulisboa.tecnico.es16al_28.domain;
 import org.jdom2.Element;
 import java.io.UnsupportedEncodingException;
 import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
+import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public abstract class File extends File_Base {
-    
-    /**
-     *  Basic constructor
-     */
+
     public File() {
         super();
     }
@@ -35,7 +33,7 @@ public abstract class File extends File_Base {
         setParent(dir);
     }
     /**
-     *  File initializer for xml
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
      */
     public void initxml(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	setId(mydrive.incID());
@@ -44,44 +42,85 @@ public abstract class File extends File_Base {
         xmlImport(xml);
     }
 
+    
+   /**
+     *  If user doesnt have permission, it throws an exception
+     *  @param  user        Current user
+     *  @param  file        File to be removed
+     *
+     *  @return true	    Returns true if user has permission, else throws exception
+     */
+
+    public boolean userHasPermissionRemove(User user) throws PermissionDeniedException{
+        String umask = user.getUmask();
+        String username = user.getUsername();
+        String ownerUsername = getOwner().getUsername();
+        if (umask.charAt(7) != 'd' || getPermission().charAt(7) != 'd') {
+            if (!username.equals("root") && !username.equals(ownerUsername)) {
+                throw new PermissionDeniedException();
+            }
+        }
+        return true;
+    }
+  
      /**
      *  File remover
      */
-    public void remove() {
-      	setParent(null);
-        setOwner(null);
-        deleteDomainObject();
+    public void remove(User user) throws PermissionDeniedException{
+        if (userHasPermissionRemove(user)){
+      		setParent(null);
+       	 	setOwner(null);
+        	deleteDomainObject();
+        }
     }
 
-    
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
     public void xmlImport(Element fileElement) throws ImportDocumentException {
-
-	try {
+        try {
             setName(new String(fileElement.getAttribute("name").getValue().getBytes("UTF-8")));
             setPermission(new String(fileElement.getAttribute("permission").getValue().getBytes("UTF-8")));
 
-	} catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new ImportDocumentException();
         }
     }
     
-    
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
     public Element xmlExport() {
-	Element element = new Element("File");
+        Element element = new Element("File");
     	element.setAttribute("id", Integer.toString(getId()));
         element.setAttribute("name", getName());
         element.setAttribute("lastChange",  getLastChange());
         element.setAttribute("permission", getPermission());
-	return element;
+        return element;
+    }
+
+    /**
+     *  Checks if the new file's path will exceed the limit
+     *  @param  login       Current login
+     *  @param  name        File's name
+     *  @return boolean     True if path does not exceed the limit, false otherwise
+     */
+    public boolean inPathLimit(Login login, String name) {
+        Dir cwd = login.getCurrentDir();
+        String path = cwd.absolutePath();
+        if((path.length() + 1 + name.length()) > 1024) {
+            return false;
+        }
+        return true;
     }
 	
     public boolean isDir(){
-	return false;
+        return false;
     }
 
     public boolean isFile(){
-	return true;
-    }  
+        return true;
+    }
 
 
     /**
@@ -91,6 +130,6 @@ public abstract class File extends File_Base {
      */
     @Override
     public String toString() {
-        return "File ID: " + getId() + "\tName: " + getName() + "\tOwner: " + getOwner().toString() + "\tPermisisons: " + getPermission() + "\tModified last at: " + getLastChange();
+        return "File ID: " + getId() + "\tName: " + getName() + "\tOwner: " + getOwner().getUsername() + "\tPermisisons: " + getPermission() + "\tModified last at: " + getLastChange();
     }
 }
