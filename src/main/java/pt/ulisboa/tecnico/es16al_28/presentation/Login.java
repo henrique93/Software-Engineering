@@ -22,15 +22,14 @@ public class Login extends MyDriveCommand {
         login.execute();
         long token = login.result();
         MyDriveShell sh = (MyDriveShell) shell();
-        String lastUser = sh.getUsername();
-        if(lastUser != null && sh.userHasEVs(lastUser)) {
-            sh.setVarsLogin(lastUser, sh.getEnvVarList());
+        Long lastUser = sh.getToken();
+        if(lastUser != null && sh.loginHasEVs(lastUser)) {
+            sh.setVarsLogin(sh.getEnvVarList());
         }
-        if (sh.userHasEVs(args[0])) {
-            sh.changeEnvVarList(sh.getVarsLogin(args[0]));
+        if (sh.loginHasEVs(lastUser)) {
+            sh.changeEnvVarList(sh.getVarsLogin(lastUser));
         }
         sh.setToken(token);
-        sh.setUsername(args[0]);
         sh.setLogin(args[0], token);
     }
     
