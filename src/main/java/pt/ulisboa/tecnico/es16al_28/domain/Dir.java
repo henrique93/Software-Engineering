@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.es16al_28.exception.FileAlreadyExistsException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotEmptyException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
+import pt.ulisboa.tecnico.es16al_28.exception.TooLongException;
 
 public class Dir extends Dir_Base {
     
@@ -44,12 +45,13 @@ public class Dir extends Dir_Base {
      */
     public Dir(Login login, String name, String permission, User user) throws FileAlreadyExistsException {
         super();
+        MyDrive mydrive = login.getMydriveL();
         for (File file: getFileSet()) {
             if (file.getName() == name) {
                 throw new FileAlreadyExistsException(name);
             }
         }
-        init(login.getMydriveL(), name, permission, user, login.getMydriveL().getRootDir());
+        init(mydrive, name, permission, user, mydrive.getRootDir());
     }
 
     /**
@@ -57,75 +59,38 @@ public class Dir extends Dir_Base {
      *  @param  login       Current MyDrive login
      *  @param  name        Directory's name
      */
-    public Dir(Login login, String name) throws FileAlreadyExistsException {
+    public Dir(Login login, String name) throws FileAlreadyExistsException, TooLongException {
         super();
+        User user = login.getUser();
         for (File file: getFileSet()) {
             if (file.getName() == name) {
                 throw new FileAlreadyExistsException(name);
             }
         }
-        init(login.getMydriveL(), name, login.getUser().getUmask(), login.getUser(), login.getCurrentDir());
+        if (!inPathLimit(login, name)) {
+            throw new TooLongException();
+        }
+        init(login.getMydriveL(), name, user.getUmask(), user, login.getCurrentDir());
     }
     
-    
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
     public Dir(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	initxml(mydrive, owner, dir,  xml);
     }
     
-    /**
-     *  Directory's simple listing. Lists every file in this directory
-     *  @return ls          List of every file in this directory
-     */
-    public String listDir() {
-        String ls = ".\n..\n"; /* . e .. ou nomes??? */
-        for (File file: getFileSet()) {
-            ls += file.toString() + "\n";
-        }
-        return ls;
-    }
     
-
-    /**
-     *  Directory's simple listing. Lists every file in this directory
-     *  @return ls          List of every file in this directory
-     */
-    public List<String> listD() {
-        List<String> ls = new ArrayList<>();
-        ls.add(toString());
-        ls.add(getParent().toString());
-        for (File file: getFileSet()){
-            ls.add(file.toString());
+    public boolean listPermission(Login l) throws PermissionDeniedException{
+        User u = l.getUser();
+        String mask = u.getUmask();
+        String username = u.getUsername();
+        
+        if((mask.charAt(6) == 'x' && getOwner().equals(username)) || username.equals("root")){
+            return true;
         }
-        return ls;
-    }
-    
-    
-    /**
-     *  Remove a file or an empty directory from the current directory if the user has permission.
-     *  @param  username    Current user's username
-     *  @param  file        File to be removed
-     */
-    public void rm(String username, File file) throws PermissionDeniedException, FileNotFoundException, NotEmptyException {
-        User owner = file.getOwner();
-        if ((owner.getUsername() != "root") && (owner.getUsername() != username)) {
-            throw new PermissionDeniedException();
-        }
-        Set entries = getFileSet();
-        if (entries.contains(file)) {
-            if (file instanceof Dir) {
-                Dir dir = (Dir) file;
-                if (dir.getParent().equals(dir)) {
-                    throw new PermissionDeniedException();
-                }
-                else if (dir.getFileCount() > 1) {
-                    throw new NotEmptyException(dir.getName());
-                }
-            }
-            removeFile(file);
-            remove();
-        }
-        else {
-            throw new FileNotFoundException(file.getName());
+        else{
+            return false;
         }
     }
 
@@ -137,9 +102,10 @@ public class Dir extends Dir_Base {
      */
 
     public File getFileByName(String name) throws NoSuchFileOrDirectoryException {
-        for (File f: getFileSet()) {
-            if (f.getName().equals(name)) {
-                return f;
+        for (File file: getFileSet()) {
+            String _name = file.getName();
+            if (_name.equals(name)) {
+                return file;
             }
         }
         throw new NoSuchFileOrDirectoryException(name);
@@ -152,81 +118,38 @@ public class Dir extends Dir_Base {
      */
 
     public boolean directoryHasFile(String name) {
-        for (File f: getFileSet()) {
-            if (f.getName().equals(name)) {
+        for (File file: getFileSet()) {
+            String _name = file.getName();
+            if (_name.equals(name)) {
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     *  If user doesnt have permission, it throws an exception
-     *  @param  user        Current user
-     *  @param  file        File to be removed
-     *
-     *  @return true	    Returns true if user has permission, else throws exception
-     */
-
-    public boolean userHasPermissionRemove(User user, File file) throws PermissionDeniedException{
-	
-	if(user.getUmask().charAt(7) != 'd' || file.getPermission().charAt(7) != 'd')
-		if(user.getUsername() != "root" && user.getUsername() != getOwner().getUsername())
-			throw new PermissionDeniedException();
-	return true;
-
-    }
 
     /**
      *	File remover : remove especific file inside current Dir except if it finds a Dir, then it proceeds differently
      */
     public void removeFile(User user, String name) throws PermissionDeniedException, NoSuchFileOrDirectoryException{
-        if(directoryHasFile(name)){
-		File f = getFileByName(name);
-		if(userHasPermissionRemove(user,f)){
-			if(f.isDir()){
-           			Dir dir = (Dir) f;
-            			if (dir.getFileCount() > 0) {
-                			dir.RmInsideDir(user);
-					dir.remove();
-            			}
-           			else {
-                			dir.remove();
-           			}	
-        		}
-        		else {
-        			f.remove();	
-			}
-		}else{
-			throw new PermissionDeniedException();
-		}
-	}else{
-		throw new NoSuchFileOrDirectoryException(name);
-	}
+        File f = getFileByName(name);
+        f.remove(user);
     }
 
     /**
      *	File remover Inside Dir : remove everything inside and then itself except if it finds a Dir, then it proceeds differently
      *  @param	user        Current user
      */
-    public void RmInsideDir(User user) throws PermissionDeniedException{	
-        for(File f_inside : getFileSet()){
-            	if(userHasPermissionRemove(user,f_inside)){
-            		if(f_inside.isDir()){
-           		    	Dir dir = (Dir) f_inside;
-				if (dir.getFileCount() > 0) {
-                			dir.RmInsideDir(user);
-					dir.remove();
-            			}
-           			else {
-                			dir.remove();
-           			}
-           		 }
-            		 else{
-             	  		f_inside.remove();
-           		 }
-	   	}	
-        }
+    @Override
+    public void remove(User user) throws PermissionDeniedException{	
+        if(getFileCount() > 0){
+		for(File f_inside : getFileSet()){
+			f_inside.remove(user);
+       		 }
+	}
+	setParent(null);
+	setOwner(null);
+        deleteDomainObject();	
     }
      
 
@@ -250,7 +173,9 @@ public class Dir extends Dir_Base {
     	super.xmlImport(dirElement);
     }
     
-
+    /**
+     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     */
     public Element xmlExport() {
         Element element = super.xmlExport();
         element.setName("Dir");
