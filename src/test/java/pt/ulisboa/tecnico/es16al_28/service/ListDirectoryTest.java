@@ -13,9 +13,9 @@ import pt.ulisboa.tecnico.es16al_28.domain.Link;
 import pt.ulisboa.tecnico.es16al_28.domain.App;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 import pt.ulisboa.tecnico.es16al_28.domain.Dir;
-import pt.ulisboa.tecnico.es16al_28.service.dto.ListDto;
+import pt.ulisboa.tecnico.es16al_28.service.dto.FileDto;
 
-
+import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 public class ListDirectoryTest extends AbstractServiceTest {
 
@@ -37,7 +37,7 @@ public class ListDirectoryTest extends AbstractServiceTest {
 
         ListDirectoryService service = new ListDirectoryService(_token);
         service.execute();
-        List<ListDto> ps = service.result();
+        List<FileDto> ps = service.result();
         
         // Check list
         assertEquals(l.getCurrentDir().getName(), ps.get(0).getName());
@@ -46,7 +46,7 @@ public class ListDirectoryTest extends AbstractServiceTest {
         assertEquals(dir2.getId(), ps.get(3).getId());
         assertEquals(link.getPermission(), ps.get(4).getPermission());
         assertEquals(app.getLastChange(), ps.get(5).getLastChange());
-        assertEquals(plainfile.getOwner().toString(), ps.get(6).getOwner());
+        assertEquals(plainfile.getOwner().getUsername(), ps.get(6).getOwner());
     }
 
     @Test
@@ -54,11 +54,24 @@ public class ListDirectoryTest extends AbstractServiceTest {
         Login l = MyDrive.getInstance().getLoginByToken(_token);
         ListDirectoryService service = new ListDirectoryService(_token);
         service.execute();
-        List<ListDto> ps = service.result();
+        List<FileDto> ps = service.result();
 
         // Check list
         assertEquals(l.getCurrentDir().getName(), ps.get(0).getName());
         assertEquals(l.getCurrentDir().getParent().getLastChange(), ps.get(1).getLastChange());
     }
+
+    @Test(expected = PermissionDeniedException.class)
+    public void ListFileWithoutPermission() {
+        MyDrive mydrive = MyDriveService.getMyDrive();
+        Login logged = mydrive.getLoginByToken(_token);
+        User user = new User("Jacinto", "987654321", "Alfredo", "rwxd--x-", logged);
+        Login login = new Login("Jacinto", "987654321");
+        login.cd("..");
+        login.cd("root");
+        long token = login.getToken();
+        ListDirectoryService service = new ListDirectoryService(token);
+        service.execute();
+    } 
 
 }
