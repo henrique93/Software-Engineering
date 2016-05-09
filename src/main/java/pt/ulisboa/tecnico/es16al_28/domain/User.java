@@ -69,14 +69,8 @@ public class User extends User_Base {
         super.setName(name);
         super.setUmask(umask);
         super.setMydrive(mydrive);
-        if (password == null) {
-            Login login = new Login(username);
-            super.setDir(new Dir(login, username, umask, this));
-        }
-        else {
-            Login login = new Login(username, password);
-            super.setDir(new Dir(login, username, umask, this));
-        }
+        Login login = new Login(username, password);
+        super.setDir(new Dir(login, username, umask, this));
     }
 
     /**
@@ -96,7 +90,7 @@ public class User extends User_Base {
 
     public void xmlImport(Element userElement) throws ImportDocumentException, NotFileException {
         for (File f: getFileSet())
-            f.remove();
+            f.remove(this);
 
         try {
             super.setUsername(new String(userElement.getAttribute("username").getValue().getBytes("UTF-8")));
@@ -129,7 +123,7 @@ public class User extends User_Base {
     public Element xmlExport() {
         Element element = new Element("user");
         element.setAttribute("username", getUsername());
-        element.setAttribute("password", getPassword());
+        element.setAttribute("password", super.getPassword());
         element.setAttribute("name", getName());
         element.setAttribute("umask", getUmask());
         element.addContent(getDir().xmlExport());
@@ -143,7 +137,7 @@ public class User extends User_Base {
     public void remove() {
         Dir home = getDir();
         for (File file: home.getFile()) {
-            file.remove();
+            file.remove(this);
         }
         super.setMydrive(null);
         deleteDomainObject();
