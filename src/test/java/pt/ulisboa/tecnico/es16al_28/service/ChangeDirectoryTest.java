@@ -11,7 +11,10 @@ import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
 import pt.ulisboa.tecnico.es16al_28.domain.User;
 import pt.ulisboa.tecnico.es16al_28.domain.Dir;
 import pt.ulisboa.tecnico.es16al_28.domain.Login;
+import pt.ulisboa.tecnico.es16al_28.domain.Link;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
+import pt.ulisboa.tecnico.es16al_28.exception.NotDirException;
+import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 
 
 public class ChangeDirectoryTest extends AbstractServiceTest {
@@ -22,16 +25,20 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         Login logged = new Login("root", "rootroot");
         _token = logged.getToken();
         Dir dir = new Dir(logged, "DirTest");
+	Link link = new Link(logged, "Linky","Banana");
     }
 	
 
-/*	TESTS WITHOUT ABSOLUTE PATH	*/
+	/*	Change Directory relative	*/
     @Test
     public void successChangedDir() {
         final String dir = "DirTest";	
         Dir insideDir = (Dir) MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir().getFileByName(dir);
+	
+        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
+	
         Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check if changed Dir to the right one(DirTest)
@@ -42,8 +49,11 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     public void changeToItself() {
         final String dir = ".";	
         Dir rootDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
+	
+        // Change to Itself(root)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
+	
         Dir currentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check changed Dir to himself(root)
@@ -55,10 +65,15 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         final String dir = "DirTest";	
         final String parent = "..";
         Dir rootDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
+	
+        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
+	
+        //Change to parent directory (root)
         ChangeDirectoryService change2Service = new ChangeDirectoryService(_token, parent);
         change2Service.execute();
+	
         Dir parentDir = MyDriveService.getMyDrive().getLoginByToken(_token).getCurrentDir();
 
         // Check changed Dir to the right one
@@ -77,20 +92,65 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
         changeService.execute();
     }
+
+    @Test(expected = NotDirException.class)
+    public void notADir() {
+        final String dir = "Linky";
 	
-/*		TESTS WITH ABSOLUTE PATH		*/
+        // Change to inside directory(DirTest)
+        ChangeDirectoryService changeService = new ChangeDirectoryService(_token, dir);
+        changeService.execute();
+    }
+
+    @Test(expected = PermissionDeniedException.class)
+    public void noPermissionAbsolute() {
+        final String dir = "..";	
+	final String noPerm = "Syke";	
+
+	MyDrive mydrive = MyDrive.getInstance();
+	Login logged = mydrive.getLoginByToken(_token);
+	
+        User user = new User("Alberto", "12345678", "Alberto", "rwxd----", logged);
+        Login login = new Login("Alberto", "12345678");
+	long token = login.getToken();
+
+	//Create Dir Syke inside Alberto's Directory
+	Dir Trash = new Dir(login, "Syke");
+
+	user = new User("Peter", "12345678", "Peter", "rwxdrwxd", logged);
+        login = new Login("Peter", "12345678");
+ 	token = login.getToken();
+
+	//Go to /home
+        ChangeDirectoryService changeService = new ChangeDirectoryService(token, dir);
+        changeService.execute();
+
+        // To Alberto's Folder although Peter doesn't have permission
+        ChangeDirectoryService changeService2 = new ChangeDirectoryService(token, dir);
+        changeService2.execute();
+    }
+	
+	/*		Absolute path		*/
     @Test
     public void successChangedDirAbsolute() {
         final String dir = "DirTest";
 	final String trash = "Lixo";	
 	MyDrive mydrive = MyDrive.getInstance();
 	Login logged = mydrive.getLoginByToken(_token);
-        User user = new User("Alberto", "1234", "Alberto", "rwxdrwxd", logged);
-        Login login = new Login("Alberto", "1234");
+	
+        User user = new User("Alberto", "12345678", "Alberto", "rwxdrwxd", logged);
+        Login login = new Login("Alberto", "12345678");
 	long token = login.getToken();
+
+	//Create Directory Lixo inside Alberto's Directory
 	Dir Trash = new Dir(login, "Lixo");
+
+	//Get directory Lixo
 	Dir insideDir = (Dir) MyDriveService.getMyDrive().getLoginByToken(token).getCurrentDir().getFileByName(trash);
+	//Go to directory root        
 	login.cd("..");
+
+        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(token, "/home/Alberto/Lixo");
         changeService.execute();
 
@@ -104,9 +164,14 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     public void changedToRootAbsolute() {	
 	MyDrive mydrive = MyDrive.getInstance();
 	Login logged = mydrive.getLoginByToken(_token);
+
 	logged.cd("..");
+
+	
+        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/");
         changeService.execute();
+
 	Dir currentDir = logged.getCurrentDir();
 
         // Check if changed Dir to the right one(DirTest)
@@ -115,11 +180,36 @@ public class ChangeDirectoryTest extends AbstractServiceTest {
     
     @Test(expected = NoSuchFileOrDirectoryException.class)
     public void NoSuchDirAbsolute() {
-	MyDrive mydrive = MyDrive.getInstance();
-	Login logged = mydrive.getLoginByToken(_token);
+		MyDrive mydrive = MyDrive.getInstance();
+		Login logged = mydrive.getLoginByToken(_token);
+
+
+        // Change to inside directory(DirTest)
         ChangeDirectoryService changeService = new ChangeDirectoryService(_token, "/home/root/Atum");
         changeService.execute();
     }
 
+    @Test(expected = NotDirException.class)
+    public void notADirAbsolute() {
+        final String dir = "DirTest";
+	final String trash = "Linker";	
+	MyDrive mydrive = MyDrive.getInstance();
+	Login logged = mydrive.getLoginByToken(_token);
+	
+        User user = new User("Alberto", "12345678", "Alberto", "rwxdrwxd", logged);
+        Login login = new Login("Alberto", "12345678");
+	long token = login.getToken();
 
-}
+	//Create Link Linker inside Alberto's Directory
+	Link Trash = new Link(login, "Linker","Banana");
+
+	//Go to directory root        
+	login.cd("..");
+
+        // Change to inside directory(DirTest)
+        ChangeDirectoryService changeService = new ChangeDirectoryService(token, "/home/Alberto/Linker");
+        changeService.execute();
+    }
+
+
+}  
