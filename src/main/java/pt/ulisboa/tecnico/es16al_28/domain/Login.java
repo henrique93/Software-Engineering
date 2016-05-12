@@ -102,51 +102,28 @@ public class Login extends Login_Base {
         return true;
     }
 
-    /*
-    public dto getEVList {
-        getEnvVarSet();
-    }*/
-
-
-    
 
     /**
-     *  Changes the current directory
-     *  @param  name        directory name
+     *  Get File by absolute path
+     *  @param  path        absolute path to the file
+     *  @return file        File with the given path
      */
 
-	/*
-    public String cd(MyDrive mydrive ,String name) throws NoSuchFileOrDirectoryException, NotDirException {
-		File currentDir;
-		Dir cast;
-		if(name.indexOf('/') == -1){
-        	if (name == ".");
-        	else if (name == "..")
-        		setCurrentDir(getCurrentDir().getParent());
-        	else {
-            	currentDir = getCurrentDir().getFileByName(name);
-            	if(currentDir.isDir()){
-		    	cast = (Dir) currentDir;
-		    	setCurrentDir(cast);
-		    	}
-		    	else throw new NotDirException(name);
-		    }
-		}
-		else{
-			String[] path = name.split("/");
-			setCurrentDir(mydrive.getRootDir());
-			for(String s: path)
-				if(!s.equals("")){
-					currentDir = getCurrentDir().getFileByName(name);
-            			if(currentDir.isDir()){
-		    			cast = (Dir) currentDir;
-		    			setCurrentDir(cast);
-		    		}
-		    		else throw new NotDirException(name);
-		    	}
-		}
-	return (getCurrentDir().absolutePath());
-    }*/
+    public File getFileByPath(String path) throws NoSuchFileOrDirectoryException {
+        String cdwPath = getCurrentDir().absolutePath();
+        String pathToDir = path.substring(0,path.lastIndexOf("/"));
+        cd(pathToDir);
+        Dir fileDir = getCurrentDir();
+        String fileName = path.substring(path.lastIndexOf("/") + 1).trim();
+        for (File file: fileDir.getFileSet()) {
+            String _name = file.getName();
+            if (_name.equals(fileName)) {
+                return file;
+            }
+        }
+        throw new NoSuchFileOrDirectoryException(path);
+    }
+
 
     public EnvironmentVariable getEvByName(String name) throws EnvironmentVariableDoesNotExistException {
         for (EnvironmentVariable ev : getEnvVarSet()) {
@@ -158,43 +135,67 @@ public class Login extends Login_Base {
         throw new EnvironmentVariableDoesNotExistException(name);
     }
 
-	public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException {
+
+	public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException, PermissionDeniedException {
 		File currentFile;
-		Dir cast;
-		if(name.indexOf('/') == -1){
-        		if (name == ".");
-        		else if (name == "..")
-        			super.setCurrentDir(getCurrentDir().getParent());
-        		     else {
-            			currentFile = getCurrentDir().getFileByName(name);
-            			if(currentFile.isDir()){
-		    			cast = (Dir) currentFile;
-		   		 	super.setCurrentDir(cast);
-		    		}
-		    		else throw new NotDirException(name);
-		    	     }
+		Dir newDir;
+		if(name.indexOf('/') == -1) {
+            if (name == ".");
+            else if (name == "..") {
+                newDir = getCurrentDir().getParent();
+                if (newDir.hasPermission(this, "x")) {
+                    super.setCurrentDir(newDir);
+                }
+                else {
+                    throw new PermissionDeniedException();
+                }
+            }
+            else {
+                currentFile = getCurrentDir().getFileByName(name);
+                if(currentFile.isDir()){
+                    newDir = (Dir) currentFile;
+                    if (newDir.hasPermission(this, "x")) {
+                        super.setCurrentDir(newDir);
+                    }
+                    else {
+                        throw new PermissionDeniedException();
+                    }
+                }
+                else {
+                    throw new NotDirException(name);
+                }
+            }
 		}
-		else{
-			super.setCurrentDir(MyDrive.getInstance().getRootDir().getParent());
-			if(name == "/"){
+		else {
+            MyDrive mydrive = MyDrive.getInstance();
+            Dir root = mydrive.getRootDir();
+			super.setCurrentDir(root.getParent());
+			if(name == "/") {
 				return (getCurrentDir().absolutePath());
 			}
 			String p = name.substring(1);
-			for(String v: p.split("/")){
-				if (getCurrentDir().directoryHasFile(v)){
+			for(String v: p.split("/")) {
+				if (getCurrentDir().directoryHasFile(v)) {
 					currentFile = getCurrentDir().getFileByName(v);
-            				if(currentFile.isDir()){
-		    				cast = (Dir) currentFile;
-		    				super.setCurrentDir(cast);
-		    			}
-		    			else throw new NotDirException(v);
+                    if(currentFile.isDir()) {
+                        newDir = (Dir) currentFile;
+                        if (newDir.hasPermission(this, "x")) {
+                            super.setCurrentDir(newDir);
+                        }
+                        else {
+                            throw new PermissionDeniedException();
+                        }
+                    }
+                    else {
+                        throw new NotDirException(v);
+                    }
 				}
                 else {
 						throw new NoSuchFileOrDirectoryException(v);
 				}		
             }
 		}
-	return (getCurrentDir().absolutePath());
+        return getCurrentDir().absolutePath();
     }
 
     /**
