@@ -12,15 +12,15 @@ public class SuperUser extends SuperUser_Base {
         init("root", "rootroot", "SuperUser", "rwxdr-x-", mydrive);
     }
 
-   public void SuperUser(MyDrive mydrive, Element xml) throws ImportDocumentException, NotFileException {
+    public void SuperUser(MyDrive mydrive, Element xml) throws ImportDocumentException, NotFileException {
         initxml(mydrive, xml);
     }
     
-     public void xmlImport(Element suserElement) throws ImportDocumentException, NotFileException {
-     		super.xmlImport(suserElement);
-     }
+    public void xmlImport(Element suserElement) throws ImportDocumentException, NotFileException {
+        super.xmlImport(suserElement);
+    }
 
-      public Element xmlExport() {
+    public Element xmlExport() {
         Element element = super.xmlExport();
         element.setName("SuperUser");
         return element; 
