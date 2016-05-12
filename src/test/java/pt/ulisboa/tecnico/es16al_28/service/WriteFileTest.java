@@ -7,26 +7,30 @@ import org.junit.Test;
 
 import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
 import pt.ulisboa.tecnico.es16al_28.domain.Login;
+import pt.ulisboa.tecnico.es16al_28.domain.Dir;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 import pt.ulisboa.tecnico.es16al_28.domain.User;
+
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
+import pt.ulisboa.tecnico.es16al_28.exception.NotFileException;
 
 public class WriteFileTest extends AbstractServiceTest {
-	
-    private long _token;
+
+	private long _token;
 
     protected void populate() {
         MyDrive md = MyDrive.getInstance();
         Login l = new Login("root", "rootroot");
         _token = l.getToken();
-        User u = new User("1user", "abcde", "1user", "rwxdrwx-",l);
-        l = new Login("1user", "abcde");
+        User u = new User("1user", "12345678", "1user", "rwxdrwx-",l);
+        l = new Login("1user", "12345678");
         PlainFile f = new PlainFile(l, "ficheiro1", "isto existe inicialmente 1");
         l = md.getLoginByToken(_token);
-        u = new User("2user", "qwerty", "2user", "rwxdrwx-", l);
-        l = new Login("2user", "qwerty");
+        u = new User("2user", "12345678", "2user", "rwxdrwx-", l);
+        l = new Login("2user", "12345678");
         f = new PlainFile(l, "ficheiro2", "isto existe inicialmente 2");
+        new Dir(l, "TestDir");
         _token = l.getToken();
     }
 
@@ -48,22 +52,29 @@ public class WriteFileTest extends AbstractServiceTest {
         WriteFileService service = new WriteFileService(_token, file, content);
         service.execute();
     }
+   
+    @Test(expected = PermissionDeniedException.class)
+    public void writeFileWithoutPermission() {
+        final String file = "aaa";
+        final String content = "vai dar erro";
+        MyDrive md = MyDrive.getInstance();
+        Login l = new Login("root", "rootroot");
+        PlainFile f = new PlainFile(l, file, "blabla");
+        User u1 = new User("pedro", "12345678", "pedro", "rwxd----",l);
+        l = new Login("pedro","12345678");
+        l.cd("..");
+        l.cd("root");
+        long token = l.getToken();
+        WriteFileService service = new WriteFileService(token, file, content);
+        service.execute();
+	
+    }
 
-   @Test(expected = PermissionDeniedException.class)
-   public void writeFileWithoutPermission() {
-       final String file = "aaa";
-       final String content = "vai dar erro";
-       MyDrive md = MyDrive.getInstance();
-       Login l = new Login("root", "rootroot");
-       PlainFile f = new PlainFile(l, file, "blabla");
-       User u1 = new User("pedro", "qaz", "pedro", "rwxdrwx-",l);
-       l = new Login("pedro","qaz");
-       l.cd("..");
-       l.cd("root");
-       long token = l.getToken();
-       WriteFileService service = new WriteFileService(token, file, content);
-       service.execute();
-   }
-
+    @Test(expected = NotFileException.class)
+    public void writeDirectory() {
+        final String name = "TestDir";
+        ReadFileService service = new ReadFileService(_token, name);
+        service.execute();
+    }
 
 }
