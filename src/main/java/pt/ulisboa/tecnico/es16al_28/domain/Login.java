@@ -7,9 +7,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
-import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
-import pt.ulisboa.tecnico.es16al_28.domain.EnvironmentVariable;
-
 import pt.ulisboa.tecnico.es16al_28.exception.UserDoesNotExistException;
 import pt.ulisboa.tecnico.es16al_28.exception.IncorrectPasswordException;
 import pt.ulisboa.tecnico.es16al_28.exception.TokenDoesNotExistException;
@@ -123,6 +120,7 @@ public class Login extends Login_Base {
         throw new NoSuchFileOrDirectoryException(path);
     }
 
+
     /**
      *  Get EnvironmentVariable by name
      *  @param  name        			Environment variable's name
@@ -138,15 +136,39 @@ public class Login extends Login_Base {
         throw new EnvironmentVariableDoesNotExistException(name);
     }
 
+
+    /**
+     *  Lists the current directory's files
+     *  @return ArrayList<File>     A list with every file in the current directory (including it's parent)
+     */
+    public ArrayList<File> ls() {
+        ArrayList<File> _listDirectory  = new ArrayList<File>();
+        Dir cwd = getCurrentDir();
+        if (cwd.hasPermission(this, "r")) {
+            File file = cwd;
+            _listDirectory.add(file);
+            file = cwd.getParent();
+            _listDirectory.add(file);
+            for (File f : cwd.getFileSet()) {
+                _listDirectory.add(f);
+            }
+            return _listDirectory;
+        }
+        else {
+            throw new PermissionDeniedException();
+        }
+    }
+
+
     /**
      *  Changes the current directory
      *  @param  name        Path or name to the new directory
      *  @return String      New directory's current path
      */
-    public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException, PermissionDeniedException {
-	File currentFile;
-	Dir newDir;
-	if(name.indexOf('/') == -1) {
+	public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException, PermissionDeniedException {
+        File currentFile;
+		Dir newDir;
+		if(name.indexOf('/') == -1) {
             if (name == ".");
             else if (name == "..") {
                 newDir = getCurrentDir().getParent();
@@ -205,6 +227,7 @@ public class Login extends Login_Base {
         return getCurrentDir().absolutePath();
     }
 
+
     /**
      *  Login's description
      *  Example:
@@ -214,6 +237,8 @@ public class Login extends Login_Base {
     public String toString() {
         return getUser().toString();
     }
+
+
 
 
     /* OVERRIDE SETTERS FOR SECURITY */
