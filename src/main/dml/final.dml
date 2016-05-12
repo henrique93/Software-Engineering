@@ -20,6 +20,10 @@ class Login {
 	DateTime validity;
 }
 
+class Association {
+	String name;
+}
+
 class EnvironmentVariable {
 	String name;
 	String value;
@@ -138,6 +142,24 @@ relation MyDriveContainsUser{
 		multiplicity 1;
 	}
 	User playsRole user {
+		multiplicity *;
+	}
+}
+
+relation UserHasAssociation{
+	User playsRole userA {
+		multiplicity 1;
+	}
+	Association playsRole association {
+		multiplicity *;
+	}
+}
+
+relation AssociationHasApp{
+	Association playsRole extension {
+		multiplicity *;
+	}
+	App playsRole appA {
 		multiplicity *;
 	}
 }
