@@ -9,6 +9,7 @@ import java.util.*;
 /* Import exceptions */
 import java.io.UnsupportedEncodingException;
 import org.jdom2.DataConversionException;
+
 import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 import pt.ulisboa.tecnico.es16al_28.exception.FileNotFoundException;
 import pt.ulisboa.tecnico.es16al_28.exception.FileAlreadyExistsException;
@@ -16,6 +17,7 @@ import pt.ulisboa.tecnico.es16al_28.exception.NotEmptyException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.TooLongException;
+import pt.ulisboa.tecnico.es16al_28.exception.InvalidNameException;
 
 public class Dir extends Dir_Base {
     
@@ -25,7 +27,7 @@ public class Dir extends Dir_Base {
      */
     public Dir(MyDrive mydrive) {
         super();
-        init(mydrive, "/", "rwxdr-x-", mydrive.getSuperUser(), this);
+        initRoot(mydrive, "/", this);
     }
 
     /**
@@ -33,9 +35,9 @@ public class Dir extends Dir_Base {
      *  @param  mydrive     MyDrive application
      *  @param  dir         directory "/"
      */
-    public Dir(MyDrive mydrive, Dir dir) {
+    public Dir(MyDrive mydrive, Dir dir) throws InvalidNameException, PermissionDeniedException {
         super();
-        init(mydrive, "home", "rwxdr-x-", mydrive.getSuperUser(), dir);
+        initRoot(mydrive, "home", dir);
     }
 
     /**
@@ -43,15 +45,16 @@ public class Dir extends Dir_Base {
      *  @param  login       Current MyDrive login
      *  @param  name        Directory's name
      */
-    public Dir(Login login, String name, String permission, User user) throws FileAlreadyExistsException {
+    public Dir(Login login, String name, String permission, User user) throws FileAlreadyExistsException, InvalidNameException, PermissionDeniedException {
         super();
         MyDrive mydrive = login.getMydriveL();
         for (File file: getFileSet()) {
-            if (file.getName() == name) {
+            String fileName = file.getName();
+            if (fileName.equals(name)) {
                 throw new FileAlreadyExistsException(name);
             }
         }
-        init(mydrive, name, permission, user, mydrive.getRootDir());
+        initHome(mydrive, name, permission, user);
     }
 
     /**
@@ -59,11 +62,12 @@ public class Dir extends Dir_Base {
      *  @param  login       Current MyDrive login
      *  @param  name        Directory's name
      */
-    public Dir(Login login, String name) throws FileAlreadyExistsException, TooLongException {
+    public Dir(Login login, String name) throws FileAlreadyExistsException, TooLongException, InvalidNameException, PermissionDeniedException {
         super();
         User user = login.getUser();
         for (File file: getFileSet()) {
-            if (file.getName() == name) {
+            String fileName = file.getName();
+            if (fileName.equals(name)) {
                 throw new FileAlreadyExistsException(name);
             }
         }
@@ -79,26 +83,12 @@ public class Dir extends Dir_Base {
     public Dir(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	initxml(mydrive, owner, dir,  xml);
     }
-    
-    
-    public boolean listPermission(Login l) throws PermissionDeniedException{
-        User u = l.getUser();
-        String mask = u.getUmask();
-        String username = u.getUsername();
-        
-        if((mask.charAt(6) == 'x' && getOwner().equals(username)) || username.equals("root")){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
 
    /**
      *  Get File inside the current directory by name
      *  @param  name        Name of file
-     *  @return f           File with the name name
+     *  @return file        File with the give name
      */
 
     public File getFileByName(String name) throws NoSuchFileOrDirectoryException {
@@ -110,6 +100,7 @@ public class Dir extends Dir_Base {
         }
         throw new NoSuchFileOrDirectoryException(name);
     }
+
 
     /**
      *  Checks if the current directory has the file
@@ -143,12 +134,12 @@ public class Dir extends Dir_Base {
     @Override
     public void remove(User user) throws PermissionDeniedException{	
         if(getFileCount() > 0){
-		for(File f_inside : getFileSet()){
-			f_inside.remove(user);
-       		 }
-	}
-	setParent(null);
-	setOwner(null);
+            for(File f_inside : getFileSet()){
+                f_inside.remove(user);
+            }
+        }
+        setParent(null);
+        setOwner(null);
         deleteDomainObject();	
     }
      
@@ -158,12 +149,14 @@ public class Dir extends Dir_Base {
       * @return path        Dir path
       */
 	public String absolutePath(){
-	String path = getName();
-	if(path.equals(getParent().getName()))
-		return path;
-	else 
-		return (path + "/" + getParent().absolutePath());
-	}
+        String path = getName();
+        if(path.equals(getParent().getName())) {
+            return path;
+        }
+        else {
+            return (path + "/" + getParent().absolutePath());
+        }
+    }
     
     /**
      *  xmlImport function

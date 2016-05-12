@@ -31,7 +31,7 @@ public class User extends User_Base {
         Pattern p = Pattern.compile("[^A-Za-z0-9]");
         Matcher m = p.matcher(username);
         MyDrive mydrive = login.getMydriveL();
-        if (!(login.getUser().equals(login.getMydriveL().getUserByUsername("root")))) {
+        if (!(login.getUser().equals(mydrive.getUserByUsername("root")))) {
             throw new PermissionDeniedException();
         }
         if (m.find() || (username.length() < 3)) {
@@ -41,17 +41,18 @@ public class User extends User_Base {
             throw new InvalidPasswordException();
         }
         for (User u: mydrive.getUserSet()) {
-            if (u.getUsername().equals(username)) {
+            String existentUsername = u.getUsername();
+            if (existentUsername.equals(username)) {
                 throw new UserAlreadyExistsException(username);
             }
         }
-        Dir home = new Dir(login, name, umask, this);
         super.setUsername(username);
+        Dir home = new Dir(login, name, umask, this);
         super.setPassword(password);
         super.setName(name);
         super.setUmask(umask);
         super.setDir(home);
-        super.setMydrive(login.getMydriveL());
+        super.setMydrive(mydrive);
 	
     }
 

@@ -39,11 +39,15 @@ public class MyDrive extends MyDrive_Base {
     public MyDrive() {
         super.setRoot(FenixFramework.getDomainRoot());
         super.setId(0);
-        super.setRootDir(new Dir(this, new Dir(this)));
-        super.setSuperUser(new SuperUser(this));
-        super.setGuest(new Guest(this));
-        getRootDir().setOwner(getSuperUser());
-        getRootDir().getParent().setOwner(getSuperUser());
+        Dir slash = new Dir (this);
+        Dir home = new Dir (this, slash);
+        super.setRootDir(home);
+        SuperUser root = new SuperUser(this);
+        super.setSuperUser(root);
+        slash.setOwner(root);
+        home.setOwner(root);
+        Guest guest = new Guest(this);
+        super.setGuest(guest);
     }
 
     /**
@@ -86,7 +90,8 @@ public class MyDrive extends MyDrive_Base {
     public boolean isLogged(Long token) {
         if(!getLogedSet().isEmpty()) {
             for (Login login : getLogedSet()) {
-                if (login.getToken().equals(token)) {
+                Long loggedToken = login.getToken();
+                if (loggedToken.equals(token)) {
                     if (login.CheckValidity()) {
                         return true;
                     }
