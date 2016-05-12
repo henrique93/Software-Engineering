@@ -18,6 +18,10 @@ import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 import pt.ulisboa.tecnico.es16al_28.exception.FileAlreadyExistsException;
 import pt.ulisboa.tecnico.es16al_28.exception.CannotCreateWithContentException;
 import pt.ulisboa.tecnico.es16al_28.exception.CannotCreateWithoutContentException;
+import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
+import pt.ulisboa.tecnico.es16al_28.exception.InvalidNameException;
+import pt.ulisboa.tecnico.es16al_28.exception.TooLongException;
+import pt.ulisboa.tecnico.es16al_28.exception.InvalidContentException;
 
 public class CreateFileTest extends AbstractServiceTest {
 
@@ -26,7 +30,6 @@ public class CreateFileTest extends AbstractServiceTest {
     protected void populate() {
         Login logged = new Login("root", "rootroot");
         _token = logged.getToken();
-     
     }   
 
     @Test
@@ -87,6 +90,48 @@ public class CreateFileTest extends AbstractServiceTest {
         final String file = "Dir";
         final String content = "Cool";
         CreateFileService service = new CreateFileService(_token, file, "dir", content);
+        service.execute();
+    }
+
+    @Test(expected = PermissionDeniedException.class)
+    public void CreateFileWithoutPermission() {
+        final String file = "Test";
+        MyDrive mydrive = MyDriveService.getMyDrive();
+        Login logged = mydrive.getLoginByToken(_token);
+        User user = new User("Alberto", "12345678", "Alberto", "rwxdr-x-", logged);
+        Login login = new Login("Alberto", "12345678");
+        login.cd("..");
+        login.cd("root");
+        CreateFileService service = new CreateFileService(login.getToken(), file, "dir");
+        service.execute();
+    }
+
+    @Test(expected = InvalidNameException.class)
+    public void CreateFileWithInvalidNameSlash() {
+        final String file = "a/c";
+        CreateFileService service = new CreateFileService(_token, file, "dir");
+        service.execute();
+    }
+
+    @Test(expected = InvalidNameException.class)
+    public void CreateFileWithInvalidNameSlash0() {
+        final String file = "a\0n";
+        CreateFileService service = new CreateFileService(_token, file, "dir");
+        service.execute();
+    }
+
+    @Test(expected = TooLongException.class)
+    public void CreateFileWithPathTooLong() {
+        final String file = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        CreateFileService service = new CreateFileService(_token, file, "dir");
+        service.execute();
+    }
+
+    @Test(expected = InvalidContentException.class)
+    public void CreateAppWithInvalidContent() {
+        final String file = "Test";
+        final String content = "Conteúdo inválido.java";
+        CreateFileService service = new CreateFileService(_token, file, "app", content);
         service.execute();
     }
 
