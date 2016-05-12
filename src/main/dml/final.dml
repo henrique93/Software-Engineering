@@ -160,6 +160,15 @@ relation AssociationHasApp{
 		multiplicity *;
 	}
 	App playsRole appA {
+		multiplicity 1;
+	}
+}
+
+relation FileHasAssociation{
+	File playsRole fileA {
 		multiplicity *;
+	}
+	Association playsRole extensionF {
+		multiplicity 1;
 	}
 }
