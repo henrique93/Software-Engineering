@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import pt.ulisboa.tecnico.es16al_28.exception.UserDoesNotExistException;
 import pt.ulisboa.tecnico.es16al_28.exception.TokenDoesNotExistException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
+import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 
 
 public class MyDrive extends MyDrive_Base {
@@ -113,14 +114,14 @@ public class MyDrive extends MyDrive_Base {
     }
     
 
-    public void xmlImport(Element element) {
+    public void xmlImport(Element element) throws ImportDocumentException {
 	for (Element node: element.getChildren("user")) {
 	    String username = node.getAttribute("username").getValue();
 	    User user = getUserByUsername(username);
 
 	    if (user == null) // Does not exist
 		user = new User(this, node);
-
+	   user.xmlImport(node);
 		}
     } 
 
