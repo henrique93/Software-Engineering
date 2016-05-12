@@ -33,8 +33,9 @@ public class App extends App_Base {
         init(login.getMydriveL(), name, user.getUmask(), user, login.getCurrentDir());
         setApp(app);
     }
-    
-      /**
+
+
+    /**
      *  App's constructor for XML
      *  @param  login       Current MyDrive login
      *  @param  owner        App's owner
@@ -42,14 +43,12 @@ public class App extends App_Base {
      *  @param  xml	xml element
      */
     public App(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
-
      	initxml(mydrive, owner, dir,  xml);	
     }
     
 
 
     public void xmlImport(Element appElement) throws ImportDocumentException {
-
 		super.xmlImport(appElement);
 
     }
@@ -92,9 +91,9 @@ public class App extends App_Base {
     }
 
 
-	@Override
-	public boolean isApp(){
-		return true;
+    @Override
+    public boolean isApp(){
+        return true;
     }
 
     @Override

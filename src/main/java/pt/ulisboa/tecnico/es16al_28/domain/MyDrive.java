@@ -114,26 +114,31 @@ public class MyDrive extends MyDrive_Base {
     }
     
 
+    /**
+     *  XML Import
+     */
     public void xmlImport(Element element) throws ImportDocumentException {
-	for (Element node: element.getChildren("user")) {
-	    String username = node.getAttribute("username").getValue();
-	    User user = getUserByUsername(username);
-
-	    if (user == null) // Does not exist
-		user = new User(this, node);
-	   user.xmlImport(node);
-		}
+        for (Element node: element.getChildren("user")) {
+            String username = node.getAttribute("username").getValue();
+            User user = getUserByUsername(username);
+            if (user == null) {
+                user = new User(this, node);
+            }
+            user.xmlImport(node);
+        }
     } 
 
-
-     public Document xmlExport() {
-         Element element = new Element("MyDrive");
-         Document doc = new Document(element);
-         element.setAttribute("id", Integer.toString(getId()));
-         for (User u: getUserSet()) {
-        	element.addContent(u.xmlExport());
-         }
-         return doc;
+    /**
+     *  XML Export
+     */
+    public Document xmlExport() {
+        Element element = new Element("MyDrive");
+        Document doc = new Document(element);
+        element.setAttribute("id", Integer.toString(getId()));
+        for (User u: getUserSet()) {
+            element.addContent(u.xmlExport());
+        }
+        return doc;
     }
 
 

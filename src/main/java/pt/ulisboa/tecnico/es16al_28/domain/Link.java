@@ -31,7 +31,14 @@ public class Link extends Link_Base {
         init(login.getMydriveL(), name, user.getUmask(), user, login.getCurrentDir());
         setApp(app);
     }
-    
+
+    /**
+     *  XML Constructor
+     */
+    public Link(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
+        initxml(mydrive, owner, dir,  xml);
+    }
+
     /**
      *  Writes content in a Link
      *  @param  login       MyDrive's current login
@@ -89,28 +96,15 @@ public class Link extends Link_Base {
         }
         return true;
     }
-    
-    /**
-     *  Checks if it is a PlainFile
-     */
+
     @Override
     public boolean isPlainFile(){
         return false;
     }
     
-    /**
-     *  Checks if it is a Link
-     */
     @Override
     public boolean isLink(){
         return true;
-    }
-
-     /**
-     *  XML initializer
-     */
-    public Link(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
-     	initxml(mydrive, owner, dir,  xml); 	
     }
     
     /**

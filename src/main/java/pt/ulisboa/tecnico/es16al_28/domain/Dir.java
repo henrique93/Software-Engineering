@@ -78,19 +78,18 @@ public class Dir extends Dir_Base {
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML Constructor
      */
     public Dir(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	initxml(mydrive, owner, dir,  xml);
     }
 
 
-   /**
+    /**
      *  Get File inside the current directory by name
      *  @param  name        Name of file
      *  @return file        File with the give name
      */
-
     public File getFileByName(String name) throws NoSuchFileOrDirectoryException {
         for (File file: getFileSet()) {
             String _name = file.getName();
@@ -144,10 +143,10 @@ public class Dir extends Dir_Base {
     }
      
 
-     /**
-      * Get the absolute path of the Dir
-      * @return path        Dir path
-      */
+    /**
+     * Get the absolute path of the Dir
+     * @return path        Dir path
+     */
 	public String absolutePath(){
         String path = getName();
         if(path.equals(getParent().getName())) {
@@ -167,7 +166,7 @@ public class Dir extends Dir_Base {
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML Export
      */
     public Element xmlExport() {
         Element element = super.xmlExport();

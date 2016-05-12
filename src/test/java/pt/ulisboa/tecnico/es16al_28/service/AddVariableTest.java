@@ -41,12 +41,5 @@ public class AddVariableTest extends AbstractServiceTest {
         assertEquals(env.getValue(), ps.get(0).getValue());
     }
 
-    @Test
-    public void testAnotherCase() {
-        /*
-         Test
-         */
-    }
-
 
 }
