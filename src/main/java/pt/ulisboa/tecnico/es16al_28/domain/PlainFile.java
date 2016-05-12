@@ -13,13 +13,11 @@ import pt.ulisboa.tecnico.es16al_28.exception.TooLongException;
 import pt.ulisboa.tecnico.es16al_28.exception.InvalidNameException;
 
 public class PlainFile extends PlainFile_Base {
-
+    
+    //run operation related 	
     private static PrintWriter out = new PrintWriter(System.out, true);
     public static void output(PrintWriter pw) { out = pw; }
     
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
-     */
     public PlainFile () {
         super();
     }
@@ -41,7 +39,7 @@ public class PlainFile extends PlainFile_Base {
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML initializer
      */
     public PlainFile(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
     	initxml(mydrive, owner, dir,  xml);
@@ -93,7 +91,7 @@ public class PlainFile extends PlainFile_Base {
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML import
      */
     public void xmlImport(Element plainfileElement) throws ImportDocumentException {
         
@@ -108,7 +106,7 @@ public class PlainFile extends PlainFile_Base {
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML export
      */
     public Element xmlExport() {
         Element element = super.xmlExport();
@@ -117,13 +115,18 @@ public class PlainFile extends PlainFile_Base {
         return element; 
     }
 
-
+    /**
+     *  Checks if it is a PlainFile
+     */
     @Override
     public boolean isPlainFile(){
         return true;
     }
 
-
+    /**
+     *  Runs content from a PlainFile
+     *  @param  args	    list of arguments
+     */
     public static void run(String[] args) throws IOException {
         String input;
         Thread master = Thread.currentThread();
@@ -157,15 +160,7 @@ public class PlainFile extends PlainFile_Base {
             }
         } );
         throut.start();
-
-        /* java 1.7 begin (must add an addition \n at the end)
-         if ((input = scan.nextLine()) != null) {
-         writer.write(input);
-         writer.newLine();
-         writer.flush();
-         }
-         java 1.7 end */
-        /* java 1.8 begin */
+        
         for (;;) {
             do
                 try { Thread.sleep(100);
@@ -179,12 +174,11 @@ public class PlainFile extends PlainFile_Base {
                 }
             } else break;
         }
-        /* java 1.8 end */
+        
         try { proc.waitFor();
         } catch (InterruptedException e) { }
 
         System.err.println ("exit: " + proc.exitValue());
         proc.destroy();
     }
-
 }
