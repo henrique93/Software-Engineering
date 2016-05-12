@@ -83,12 +83,17 @@ public class User extends User_Base {
         initxml(mydrive,xml);
     }
 
+    /**
+     *  XML Initializer
+     */
     public void initxml(MyDrive mydrive, Element xml) throws ImportDocumentException, NotFileException {
         setMydrive(mydrive);
         xmlImport(xml);
     }
     
-
+    /**
+     *  XML Import
+     */
     public void xmlImport(Element userElement) throws ImportDocumentException, NotFileException {
         for (File f: getFileSet())
             f.remove(this);
@@ -121,6 +126,9 @@ public class User extends User_Base {
     }
     
 
+    /**
+     *  XML Export
+     */
     public Element xmlExport() {
         Element element = new Element("user");
         element.setAttribute("username", getUsername());

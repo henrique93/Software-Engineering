@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.es16al_28.exception.TooLongException;
 import pt.ulisboa.tecnico.es16al_28.exception.InvalidNameException;
 
 public class PlainFile extends PlainFile_Base {
-    
+
     //run operation related 	
     private static PrintWriter out = new PrintWriter(System.out, true);
     public static void output(PrintWriter pw) { out = pw; }
@@ -115,9 +115,6 @@ public class PlainFile extends PlainFile_Base {
         return element; 
     }
 
-    /**
-     *  Checks if it is a PlainFile
-     */
     @Override
     public boolean isPlainFile(){
         return true;
