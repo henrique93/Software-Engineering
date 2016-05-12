@@ -31,8 +31,7 @@ public class Link extends Link_Base {
         init(login.getMydriveL(), name, user.getUmask(), user, login.getCurrentDir());
         setApp(app);
     }
-
-
+    
     /**
      *  Writes content in a Link
      *  @param  login       MyDrive's current login
@@ -54,12 +53,11 @@ public class Link extends Link_Base {
         File file = login.getFileByPath(getApp());
         return file.readFile(login);
     }
-
-
+    
     /**
-     *  Reads content from a Link
+     *  Runs content from a Link
      *  @param  login       MyDrive's current login
-     *  @return link's content
+     *  @param  args	    list of arguments
      */
     public void run(Login login, String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         File file = login.getFileByPath(getApp());
@@ -78,8 +76,7 @@ public class Link extends Link_Base {
         }
 
     }
-
-
+    
     /**
      *  Checks if the content of the Link is valid
      *  @param  content     Link's content
@@ -92,34 +89,39 @@ public class Link extends Link_Base {
         }
         return true;
     }
-
+    
+    /**
+     *  Checks if it is a PlainFile
+     */
     @Override
     public boolean isPlainFile(){
         return false;
     }
-
+    
+    /**
+     *  Checks if it is a Link
+     */
     @Override
     public boolean isLink(){
         return true;
     }
 
-
-    /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     /**
+     *  XML initializer
      */
     public Link(MyDrive mydrive, User owner, Dir dir, Element xml) throws ImportDocumentException {
      	initxml(mydrive, owner, dir,  xml); 	
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML import
      */
     public void xmlImport(Element linkElement) throws ImportDocumentException {
 		super.xmlImport(linkElement);
     }
     
     /**
-     *  FALTA COMENTAR_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>_>
+     *  XML export
      */
     public Element xmlExport() {
         Element element = super.xmlExport();
@@ -128,4 +130,3 @@ public class Link extends Link_Base {
     }
     
 }
-
