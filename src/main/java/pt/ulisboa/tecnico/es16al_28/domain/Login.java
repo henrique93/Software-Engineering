@@ -108,7 +108,6 @@ public class Login extends Login_Base {
      *  @param  path        absolute path to the file
      *  @return file        File with the given path
      */
-
     public File getFileByPath(String path) throws NoSuchFileOrDirectoryException {
         String cdwPath = getCurrentDir().absolutePath();
         String pathToDir = path.substring(0,path.lastIndexOf("/"));
@@ -124,7 +123,11 @@ public class Login extends Login_Base {
         throw new NoSuchFileOrDirectoryException(path);
     }
 
-
+    /**
+     *  Get EnvironmentVariable by name
+     *  @param  name        			Environment variable's name
+     *  @return EnvironmentVariable		EnvironmentVariable with the given
+     */
     public EnvironmentVariable getEvByName(String name) throws EnvironmentVariableDoesNotExistException {
         for (EnvironmentVariable ev : getEnvVarSet()) {
             String evName = ev.getName();
@@ -135,11 +138,15 @@ public class Login extends Login_Base {
         throw new EnvironmentVariableDoesNotExistException(name);
     }
 
-
-	public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException, PermissionDeniedException {
-		File currentFile;
-		Dir newDir;
-		if(name.indexOf('/') == -1) {
+    /**
+     *  Changes the current directory
+     *  @param  name        Path or name to the new directory
+     *  @return String      New directory's current path
+     */
+    public String cd(String name) throws NoSuchFileOrDirectoryException, NotDirException, PermissionDeniedException {
+	File currentFile;
+	Dir newDir;
+	if(name.indexOf('/') == -1) {
             if (name == ".");
             else if (name == "..") {
                 newDir = getCurrentDir().getParent();
