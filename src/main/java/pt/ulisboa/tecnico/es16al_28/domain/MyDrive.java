@@ -16,8 +16,8 @@ import java.io.PrintStream;
 
 import pt.ulisboa.tecnico.es16al_28.exception.UserDoesNotExistException;
 import pt.ulisboa.tecnico.es16al_28.exception.TokenDoesNotExistException;
+import pt.ulisboa.tecnico.es16al_28.exception.TokenExpiredException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
-import pt.ulisboa.tecnico.es16al_28.exception.ImportDocumentException;
 
 
 public class MyDrive extends MyDrive_Base {
@@ -70,13 +70,14 @@ public class MyDrive extends MyDrive_Base {
      *  @param  token       Token from the Lofin we wish to find
      *  @return login       Login correspondant to the given token
      */
-    public Login getLoginByToken(Long token) throws TokenDoesNotExistException {
+    public Login getLoginByToken(Long token) throws TokenDoesNotExistException, TokenExpiredException {
         if(!getLogedSet().isEmpty()) {
             for (Login login : getLogedSet()) {
                 if (login.getToken().equals(token)) {
                     if(login.CheckValidity()){
                         return login;
                     }
+                    throw new TokenExpiredException();
                 }
             }
         }
@@ -114,31 +115,26 @@ public class MyDrive extends MyDrive_Base {
     }
     
 
-    /**
-     *  XML Import
-     */
-    public void xmlImport(Element element) throws ImportDocumentException {
-        for (Element node: element.getChildren("user")) {
-            String username = node.getAttribute("username").getValue();
-            User user = getUserByUsername(username);
-            if (user == null) {
-                user = new User(this, node);
-            }
-            user.xmlImport(node);
-        }
+    public void xmlImport(Element element) {
+	for (Element node: element.getChildren("user")) {
+	    String username = node.getAttribute("username").getValue();
+	    User user = getUserByUsername(username);
+
+	    if (user == null) // Does not exist
+		user = new User(this, node);
+
+		}
     } 
 
-    /**
-     *  XML Export
-     */
-    public Document xmlExport() {
-        Element element = new Element("MyDrive");
-        Document doc = new Document(element);
-        element.setAttribute("id", Integer.toString(getId()));
-        for (User u: getUserSet()) {
-            element.addContent(u.xmlExport());
-        }
-        return doc;
+
+     public Document xmlExport() {
+         Element element = new Element("MyDrive");
+         Document doc = new Document(element);
+         element.setAttribute("id", Integer.toString(getId()));
+         for (User u: getUserSet()) {
+        	element.addContent(u.xmlExport());
+         }
+         return doc;
     }
 
 

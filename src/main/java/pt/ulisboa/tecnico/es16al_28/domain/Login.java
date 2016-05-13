@@ -268,7 +268,12 @@ public class Login extends Login_Base {
 
     @Override
     public void setValidity(DateTime dateTime) throws PermissionDeniedException {
-        throw new PermissionDeniedException();
+        if (!dateTime.isAfter(getValidity())) {
+            super.setValidity(dateTime);
+        }
+        else {
+            throw new PermissionDeniedException();
+        }
     }
 
     

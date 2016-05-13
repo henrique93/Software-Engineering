@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
+import org.joda.time.DateTime;
 
 import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
 import pt.ulisboa.tecnico.es16al_28.domain.User;
@@ -16,7 +17,7 @@ import pt.ulisboa.tecnico.es16al_28.domain.App;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
-
+import pt.ulisboa.tecnico.es16al_28.exception.TokenExpiredException;
 
 
 public class DeleteFileTest extends AbstractServiceTest {
@@ -89,6 +90,16 @@ public class DeleteFileTest extends AbstractServiceTest {
         login.cd("root");
         long token = login.getToken();
         DeleteFileService service = new DeleteFileService(token, file);
+        service.execute();
+    }
+
+    @Test(expected = TokenExpiredException.class)
+    public void expiredLogin() {
+        final String file = "LinkTest";
+        MyDrive mydrive = MyDrive.getInstance();
+        Login logged = mydrive.getLoginByToken(_token);
+        logged.setValidity(new DateTime(2016, 5, 13, 15, 0));
+        DeleteFileService service = new DeleteFileService(_token, file);
         service.execute();
     }
 
