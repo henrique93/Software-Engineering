@@ -15,12 +15,14 @@ import pt.ulisboa.tecnico.es16al_28.domain.MyDrive;
 import pt.ulisboa.tecnico.es16al_28.domain.Login;
 import pt.ulisboa.tecnico.es16al_28.domain.User;
 import pt.ulisboa.tecnico.es16al_28.domain.App;
+import pt.ulisboa.tecnico.es16al_28.domain.Link;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
 import pt.ulisboa.tecnico.es16al_28.domain.Dir;
 import pt.ulisboa.tecnico.es16al_28.presentation.Hello;
 
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
+import pt.ulisboa.tecnico.es16al_28.exception.CyclicLinkException;
 
 @RunWith(JMockit.class)
 public class ExecuteFileTest extends AbstractServiceTest {
@@ -31,6 +33,8 @@ public class ExecuteFileTest extends AbstractServiceTest {
 		Login logged = new Login("root", "rootroot");
 		_token = logged.getToken();
         new App(logged , "test", "pt.ulisboa.tecnico.es16al_28.presentation.Hello");
+        new Link(logged, "CyclicLink1", "/home/root/CyclicLink2");
+        new Link(logged, "CyclicLink2", "/home/root/CyclicLink1");
     }
 
     @Test
@@ -104,5 +108,13 @@ public class ExecuteFileTest extends AbstractServiceTest {
         Login l = mydrive.getLoginByToken(_token);
         ExecuteFileService executeService = new ExecuteFileService(_token, appName, args);
         executeService.execute();
+    }
+
+    @Test(expected = CyclicLinkException.class)
+    public void executeCyclicLink() {
+        final String name = "CyclicLink1";
+        String args[] = { };
+        ExecuteFileService service = new ExecuteFileService(_token, name, args);
+        service.execute();
     }
 }

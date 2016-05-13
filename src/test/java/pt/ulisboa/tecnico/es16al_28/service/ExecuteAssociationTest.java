@@ -17,7 +17,7 @@ import mockit.*;
 import  pt.ulisboa.tecnico.es16al_28.domain.*;
 
 import pt.ulisboa.tecnico.es16al_28.exception.InvalidExtensionException;
-
+import pt.ulisboa.tecnico.es16al_28.exception.NoExtensionException;
 			//one test missing: file without extension
 
 @RunWith(JMockit.class)
@@ -92,5 +92,25 @@ public class ExecuteAssociationTest extends AbstractServiceTest {
 	
     	}
 
+
+
+    @Test(expected = NoExtensionException.class)
+    public void NoExtensionTest() {
+	MyDrive mydrive = MyDrive.getInstance();
+	Login logged = mydrive.getLoginByToken(_token);
+ 	String args[] = { };
+	PlainFile pf = new PlainFile(logged, "test", "stuff");
+	
+	new MockUp<ExecuteFileService>(){
+		@Mock
+	   	void dispatch()  throws NoExtensionException {
+			throw new NoExtensionException(pf.getName());
+			}		
+		};
+	ExecuteFileService executeService = new ExecuteFileService (_token, "test", args);
+	executeService.execute();
+
+	
+    	}
 
 }
