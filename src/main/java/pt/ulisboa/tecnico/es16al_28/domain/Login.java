@@ -106,11 +106,15 @@ public class Login extends Login_Base {
      *  @return file        File with the given path
      */
     public File getFileByPath(String path) throws NoSuchFileOrDirectoryException {
-        String cdwPath = getCurrentDir().absolutePath();
-        String pathToDir = path.substring(0,path.lastIndexOf("/"));
-        cd(pathToDir);
         Dir fileDir = getCurrentDir();
-        String fileName = path.substring(path.lastIndexOf("/") + 1).trim();
+        String fileName = path;
+        if (path.contains("/")) {
+            String cdwPath = getCurrentDir().absolutePath();
+            String pathToDir = path.substring(0,path.lastIndexOf("/"));
+            cd(pathToDir);
+            fileDir = getCurrentDir();
+            fileName = path.substring(path.lastIndexOf("/") + 1).trim();
+        }
         for (File file: fileDir.getFileSet()) {
             String _name = file.getName();
             if (_name.equals(fileName)) {
