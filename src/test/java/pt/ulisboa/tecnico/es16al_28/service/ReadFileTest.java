@@ -10,10 +10,12 @@ import pt.ulisboa.tecnico.es16al_28.domain.Login;
 import pt.ulisboa.tecnico.es16al_28.domain.User;
 import pt.ulisboa.tecnico.es16al_28.domain.Dir;
 import pt.ulisboa.tecnico.es16al_28.domain.PlainFile;
+import pt.ulisboa.tecnico.es16al_28.domain.Link;
 
 import pt.ulisboa.tecnico.es16al_28.exception.PermissionDeniedException;
 import pt.ulisboa.tecnico.es16al_28.exception.NoSuchFileOrDirectoryException;
 import pt.ulisboa.tecnico.es16al_28.exception.NotFileException;
+import pt.ulisboa.tecnico.es16al_28.exception.CyclicLinkException;
 
 public class ReadFileTest extends AbstractServiceTest {
 
@@ -24,6 +26,8 @@ public class ReadFileTest extends AbstractServiceTest {
         _token = logged.getToken();
         PlainFile pf = new PlainFile(logged, "Alberto?", "ou Jacinto?");
         Dir dir = new Dir(logged, "TestDir");
+        Link link1 = new Link(logged, "CyclicLink1", "/home/root/CyclicLink2");
+        Link link2 = new Link(logged, "CyclicLink2", "/home/root/CyclicLink1");
     }
 
     @Test
@@ -70,6 +74,13 @@ public class ReadFileTest extends AbstractServiceTest {
     @Test(expected = NotFileException.class)
     public void readDirectory() {
         final String name = "TestDir";
+        ReadFileService service = new ReadFileService(_token, name);
+        service.execute();
+    }
+
+    @Test(expected = CyclicLinkException.class)
+    public void readCyclicLink() {
+        final String name = "CyclicLink1";
         ReadFileService service = new ReadFileService(_token, name);
         service.execute();
     }
